@@ -100,7 +100,7 @@ params:
     ShowToc: false
     comments: true
     images: ["images/avatar.jpg"]
-    disqusShortname: yourDisqusShortname
+    disqusShortname: hotjuice
     
     profileMode:
     # 备选
