@@ -2,7 +2,7 @@ baseURL: "https://hotjui.cc" # if your site is in 'https', then make sure your b
 title: Juice bar | Hotjuice's blog
 paginate: 5
 theme: PaperMod
-defaultContentLanguage: ch
+defaultContentLanguage: en
 
 enableInlineShortcodes: true
 enableRobotsTXT: true
@@ -21,8 +21,27 @@ languages:
     CH:
         languageName: "Chinese"
         languageAltTitle: Chinese
-        weight: 1
+        weight: 2
         title: 果汁饮品店
+
+        menu:
+            main:
+                # - name: Archive
+                #   url: ../archives/
+                #   weight: 1
+                # - name: Tags
+                #   url: tags
+                #   weight: 2
+                - name: Categories
+                  url: categories
+                  weight: 3
+                - name: Search
+                  url: ../search/
+                  weight: 4
+                - name: About
+                  url: about
+                  weight: 5
+
         profileMode:
             enabled: true
             title: 热果汁
@@ -31,19 +50,55 @@ languages:
             imageWidth: 120
             imageHeight: 120
             subtitle: "我是果汁，很高兴遇见你(ˊ˘ˋ*)♡"
+            blog: true
             buttons:
                 - name: Blog
-                  url: posts
+                  url: ../posts   
+                - name: Archives
+                  url: ../archives
                 - name: Tags
-                  url: tags
+                  url: ../tags   
+
+        homeInfoParams:
+            enabled : true
+            Title: "HOTJUICE"
+            imageUrl: "images/avatar.jpg"
+            imageTitle: my image
+            imageWidth: 120
+            imageHeight: 120
+            Content: >
+             
+            buttons:
+                - name: Archives
+                  url: archives
+                - name: Tags
+                  url: tags      
+             
+        socialIcons:
+           - name: github
+             url: "https://github.com/hotjuicew"
+           - name: twitter
+             url: "https://twitter.com/hotjuicee"
+           - name: telegram
+             url: "https://t.me/Hotjuice"
+           - name: email
+             url: "mailto:hotjuicew@outlook.com"
+
+    
+
+
+    en:
+        languageName: "English"
+        weight: 1
+          
         menu:
             main:
-                - name: Archive
-                  url: ../archives/
-                  weight: 1
-                - name: Tags
-                  url: tags
-                  weight: 2
+                # - name: Archive
+                #   url: ../archives/
+                #   weight: 1
+                # - name: Tags
+                #   url: tags
+                #   weight: 2
                 - name: Categories
                   url: categories
                   weight: 3
@@ -54,27 +109,38 @@ languages:
                   url: about
                   weight: 5
 
-
-    en:
-        languageName: "English"
-        weight: 2
-        menu:
-            main:
-                - name: Archive
-                  url: ../archives/
-                  weight: 1
+        profileMode:
+            enabled: false
+            title: 热果汁
+            imageUrl: "images/avatar.jpg"
+            imageTitle: my image
+            imageWidth: 120
+            imageHeight: 120
+            subtitle: "我是果汁，很高兴遇见你(ˊ˘ˋ*)♡"
+            blog: true
+            buttons:
+                - name: Blog
+                  url: posts
                 - name: Tags
-                  url: tags/
-                  weight: 2
-                - name: Categories
-                  url: categories/
-                  weight: 3
-                - name: Search
-                  url: search/
-                  weight: 4
-                - name: About
-                  url: ../about/
-                  weight: 5
+                  url: tags 
+                - name: Archives
+                  url: archives
+        homeInfoParams:
+            enabled : true
+            Title: "I'M HOTJUICE🍹"
+            Content: >
+                <br><br>🪐 💫 ⭐️ 🌟 ✨ <br>**Home. I'll go home. And I'll think of some way to... After all, tomorrow is another day.**
+                <br>       ——Scarlett O'Hara
+        socialIcons:
+           - name: github
+             url: "https://github.com/hotjuicew"
+           - name: twitter
+             url: "https://twitter.com/hotjuicee"
+           - name: telegram
+             url: "https://t.me/Hotjuice"
+           - name: email
+             url: "mailto:hotjuicew@outlook.com"
+
 
   
 
@@ -99,53 +165,14 @@ params:
     ShowPostNavLinks: true
     ShowBreadCrumbs: true
     ShowCodeCopyButtons: true
-    ShowToc: false
+    ShowToc: true
     comments: true
     images: ["images/avatar.jpg"]
     disqusShortname: hotjuice
     
-    profileMode:
-    # 备选
-        enabled: false
-        title: 热果汁
-        imageUrl: "images/avatar.jpg"
-        imageTitle: my image
-        imageWidth: 120
-        imageHeight: 120
-        subtitle: " "
-        buttons:
-            - name: Archives
-              url: archives
-            - name: Tags
-              url: tags
-
-    homeInfoParams:
-        enabled : true
-        Title: "HOTJUICE"
-        imageUrl: "images/avatar.jpg"
-        imageTitle: my image
-        imageWidth: 120
-        imageHeight: 120
-        Content: >
-            # <br><br>- Hi there 👋🏻<br><br> - I'M HOTJUICE🍹 <br><br>  - Welcome to my blog 💫<br><br>  - This is me thinking about life and development, discovering old lessons and learning new stuff 🌟  <br><br> - And wish you all the best 💐<br><br><br>
-        buttons:
-            - name: Archives
-              url: archives
-            - name: Tags
-              url: tags      
-        
-      
-    socialIcons:
-        - name: github
-          url: "https://github.com/hotjuicew"
-        - name: twitter
-          url: "https://twitter.com/hotjuicee"
-        - name: telegram
-          url: "https://t.me/Hotjuice"
-        - name: email
-          url: "mailto:hotjuicew@outlook.com"
-
     
+
+   
 
 
 taxonomies:
