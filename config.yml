@@ -165,7 +165,7 @@ params:
     ShowPostNavLinks: true
     ShowBreadCrumbs: true
     ShowCodeCopyButtons: true
-    ShowToc: true
+    ShowToc: false
     comments: true
     images: ["images/avatar.jpg"]
     disqusShortname: hotjuice
