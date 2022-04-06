@@ -100,7 +100,8 @@ params:
     ShowToc: false
     comments: true
     images: ["images/avatar.jpg"]
-
+    disqusShortname: yourDisqusShortname
+    
     profileMode:
     # 备选
         enabled: false
