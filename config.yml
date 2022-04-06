@@ -170,10 +170,7 @@ params:
     images: ["images/avatar.jpg"]
     disqusShortname: hotjuice
     
-    
-
-   
-
+  
 
 taxonomies:
     category: categories
