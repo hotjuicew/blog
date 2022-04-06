@@ -18,7 +18,7 @@ minify:
     # minifyOutput: true
 
 languages:
-    CH:
+    ZH:
         languageName: "Chinese"
         languageAltTitle: Chinese
         weight: 2
@@ -117,7 +117,6 @@ languages:
             imageWidth: 120
             imageHeight: 120
             subtitle: "我是果汁，很高兴遇见你(ˊ˘ˋ*)♡"
-            blog: true
             buttons:
                 - name: Blog
                   url: posts
@@ -152,25 +151,24 @@ outputs:
 
 params:
     env: production # to enable google analytics, opengraph, twitter-cards and schema.
-    description: "Theme PaperMod - https://github.com/adityatelange/hugo-PaperMod"
-    author: Theme PaperMod
+    # description: "Theme PaperMod - https://github.com/adityatelange/hugo-PaperMod"
+    # author: Theme PaperMod
     # author: ["Me", "You"] # multiple authors
 
-    defaultTheme: auto
+    # defaultTheme: auto
     # disableThemeToggle: true
     ShowShareButtons: false
     ShowReadingTime: false
     # disableSpecial1stPost: true
     displayFullLangName: true
-    ShowPostNavLinks: true
+    # 终于找到你了，prev post栏
+    ShowPostNavLinks: false
     ShowBreadCrumbs: true
     ShowCodeCopyButtons: true
     ShowToc: false
     comments: true
-    images: ["images/avatar.jpg"]
     disqusShortname: hotjuice
     
-  
 
 taxonomies:
     category: categories
