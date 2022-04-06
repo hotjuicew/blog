@@ -40,19 +40,20 @@ languages:
             main:
                 - name: Archive
                   url: ../archives/
-                  weight: 5
+                  weight: 1
                 - name: Tags
                   url: tags
-                  weight: 10
+                  weight: 2
                 - name: Categories
                   url: categories
-                  weight: 10
-                - name: About
-                  url: about
-                  weight: 10
+                  weight: 3
                 - name: Search
                   url: search/
-                  weight: 10
+                  weight: 4
+                - name: About
+                  url: about
+                  weight: 5
+
 
     en:
         languageName: "English"
@@ -61,19 +62,20 @@ languages:
             main:
                 - name: Archive
                   url: ../archives/
-                  weight: 5
+                  weight: 1
                 - name: Tags
                   url: tags/
-                  weight: 10
+                  weight: 2
                 - name: Categories
                   url: categories/
-                  weight: 10
-                - name: About
-                  url: ../about/
-                  weight: 10
+                  weight: 3
                 - name: Search
                   url: search/
-                  weight: 10
+                  weight: 4
+                - name: About
+                  url: ../about/
+                  weight: 5
+
   
 
 outputs:
