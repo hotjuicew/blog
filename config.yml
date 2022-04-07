@@ -33,13 +33,13 @@ languages:
                 #   url: tags
                 #   weight: 2
                 - name: Categories
-                  url: categories
+                  url: ../categories/
                   weight: 3
                 - name: Search
                   url: ../search/
                   weight: 4
                 - name: About
-                  url: about
+                  url: ../about/
                   weight: 5
 
         profileMode:
@@ -103,7 +103,7 @@ languages:
                   url: categories
                   weight: 3
                 - name: Search
-                  url: search/
+                  url: search
                   weight: 4
                 - name: About
                   url: about
