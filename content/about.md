@@ -1,6 +1,7 @@
 ---
 title: "About me"
 date: 2022-04-05T21:57:21+08:00
+layout: about
 draft: false
 ---
 

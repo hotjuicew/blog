@@ -6,7 +6,7 @@ tags: [生活]
 draft: false
 ---
 
->{{< rawhtml >}}
+{{< rawhtml >}}
 <div class="content">
     <p>从你说“我愿意”那一刻开始</p>
     <h2>我们已经在一起了</h2>
