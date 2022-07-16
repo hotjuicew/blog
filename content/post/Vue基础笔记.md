@@ -268,18 +268,26 @@ v-on绑定事件监听器。
   </div>
 ```
 #### 4.2 绑定事件参数传递
-```html
-<div id="app">
-    <!-- 1.默认传递event对象 -->
-    <button @click="btn1Click">按钮1</button>
+Vue事件绑定如何传递参数？如何传递event参数？
 
-    <!-- 2.只有自己的参数 -->
-    <button @click="btn2Click('why', age)">按钮2</button>
+* 情况一：如果该方法不需要额外参数，那么方法后的()可以不添加。 
 
-    <!-- 3.自己的参数和event对象 -->
-    <!-- 在模板中想要明确的获取event对象: $event -->
-    <button @click="btn3Click('why', age, $event)">按钮3</button>
-  </div>
+  * 如果方法本身中有一个参数，那么会默认将原生事件event参数传递进去 
+
+*  情况二：如果需要同时传入某个参数，同时需要event时，可以通过**$event**传入事件。
+
+  
+
+```HTML 
+     <!-- 1.默认传递event对象 -->
+      <button @click="btnClick">按钮1</button>
+      <!-- 2.只传递自己的参数 -->
+      <button @click="btnClick2('hello',1111)">按钮2</button>
+      <!-- data里的变量 -->
+      <button @click="btnClick3(info,name)">按钮2</button>
+      <!-- 3.传递自己的参数和event对象 -->
+      <!-- 在模板中想要明确的获取event对象: $event -->
+      <button @click="btnClick4('哈哈哈哈',$event)">按钮3</button>
 ```
 #### 4.3绑定事件的修饰符
 * stop - 调用 event.stopPropagation()。
@@ -300,7 +308,7 @@ v-on绑定事件监听器。
   </div>
 ```
 
-### 5 v-if
+### 5 v-if 条件渲染
 ```html
 <!-- v-if="条件" -->
     <div class="info" v-if="Object.keys(info).length">
@@ -380,7 +388,7 @@ template元素可以当作不可见的包裹元素，并且在v-if上使用，�
       <p>请输入个人信息后, 再进行展示~</p>
     </template>
 ```
-### v-show
+### 7 v-show
 ```html
 
   <div id="app">
@@ -397,7 +405,7 @@ template元素可以当作不可见的包裹元素，并且在v-if上使用，�
     </div>
   </div>
 ```
-* v-if和v-show有什么区别？
+v-if和v-show有什么区别？
 
   * 在用法上的区别： 
     * v-show是不支持template； 
@@ -405,12 +413,339 @@ template元素可以当作不可见的包裹元素，并且在v-if上使用，�
   * 本质的区别
     * v-show元素无论是否需要显示到浏览器上，它的DOM实际都是有存在的，只是通过CSS的display属性来进行切换； 
     * v-if当条件为false时，其对应的原生压根不会被渲染到DOM中
+### 8 v-for 列表渲染
+
+#### 8.1[遍历数组](https://v3.cn.vuejs.org/guide/list.html#%E7%94%A8-v-for-%E6%8A%8A%E4%B8%80%E4%B8%AA%E6%95%B0%E7%BB%84%E6%98%A0%E5%B0%84%E4%B8%BA%E4%B8%80%E7%BB%84%E5%85%83%E7%B4%A0)
+```html
+<body>
+
+  <div id="app">
+    <!-- 1.电影列表进行渲染 -->
+    <h2>电影列表</h2>
+    <ul>
+      <li v-for="movie in movies">{{ movie }}</li>
+    </ul>
+
+    <!-- 2.电影列表同时有索引 -->
+    <ul>
+      <li v-for="(movie, index) in movies">{{index + 1}} - {{ movie }}</li>
+    </ul>
+
+    <!-- 3.遍历数组复杂数据 -->
+    <h2>商品列表</h2>
+    <div class="item" v-for="item in products">
+      <h3 class="title">商品: {{item.name}}</h3>
+      <span>价格: {{item.price}}</span>
+      <p>秒杀: {{item.desc}}</p>
+    </div>
+  </div>
+  
+  <script src="../lib/vue.js"></script>
+  <script>
+    // 1.创建app
+    const app = Vue.createApp({
+      // data: option api
+      data() {
+        return {
+          // 1.movies
+          movies: ["星际穿越", "少年派", "大话西游", "哆啦A梦"],
+
+          // 2.数组: 存放的是对象
+          products: [
+            { id: 110, name: "Macbook", price: 9.9, desc: "9.9秒杀, 快来抢购!" },
+            { id: 111, name: "iPhone", price: 8.8, desc: "9.9秒杀, 快来抢购!" },
+            { id: 112, name: "小米电脑", price: 9.9, desc: "9.9秒杀, 快来抢购!" },
+          ]
+        }
+      },
+    })
+
+    // 2.挂载app
+    app.mount("#app")
+  </script>
+</body>
+```
+#### 8.2 [遍历对象](https://v3.cn.vuejs.org/guide/list.html#%E5%9C%A8-v-for-%E9%87%8C%E4%BD%BF%E7%94%A8%E5%AF%B9%E8%B1%A1)
+```html
+<body>
+
+  <div id="app">
+    <!-- 1.遍历数组 -->
+
+    <!-- 2.遍历对象 -->
+    <ul>
+      <li v-for="(value, key, index) in info">{{value}}-{{key}}-{{index}}</li>
+    </ul>
+
+    <!-- 3.遍历字符串(iterable) -->
+    <ul>
+      <li v-for="item in message">{{item}}</li>
+    </ul>
+
+    <!-- 4.遍历数字 -->
+    <ul>
+      <li v-for="item in 100">{{item}}</li>
+    </ul>
+  </div>
+  
+  <script src="../lib/vue.js"></script>
+  <script>
+    // 1.创建app
+    const app = Vue.createApp({
+      // data: option api
+      data() {
+        return {
+          message: "Hello Vue",
+          movies: [],
+          info: { name: "why", age: 18, height: 1.88 }
+        }
+      },
+    })
+
+    // 2.挂载app
+    app.mount("#app")
+  </script>
+</body>
+```
+补充1：
+```html
+<!-- 如果div没有实际的意义, 那么可以使用template替换 -->
+    <div v-for="(value, key, index) in infos">
+      <span>{{value}}</span>
+      <strong>{{key}}</strong>
+      <i>{{index}}</i>
+    </div>
+```
+补充2：修改数组的练习
+```html
+<body>
+
+  <div id="app">
+    <ul>
+      <li v-for="item in names">{{ item }}</li>
+    </ul>
+    <button @click="changeArray">修改数组</button>
+  </div>
+  
+  <script src="../lib/vue.js"></script>
+  <script>
+    // 1.创建app
+    const app = Vue.createApp({
+      // data: option api
+      data() {
+        return {
+          names: ["abc", "cba", "nba", "aaa", "ccc"]
+        }
+      },
+      methods: {
+        changeArray() {
+          // 1.直接将数组修改为一个新的数组
+          // this.names = ["why", "kobe"]
+
+          // 2.通过一些数组的方法, 修改数组中的元素
+          // this.names.push("why")
+          // this.names.pop()
+          // this.names.splice(2, 1, "why")
+          // this.names.sort()
+          // this.names.reverse()
+
+          // 3.不修改原数组的方法是不能侦听(watch)
+          const newNames = this.names.map(item => item + "why")
+          this.names = newNames
+        }
+      }
+    })
+
+    // 2.挂载app
+    app.mount("#app")
+  </script>
+</body>
+```
+#### 8.3 v-for中key属性
+**只要写v-for,都要绑定key**
+为了给 Vue 一个提示，以便它能跟踪每个节点的身份，从而重用和重新排序现有元素，你需要为每项提供一个唯一的 key attribute：
+```html
+<div v-for="item in items" :key="item.id">
+  <!-- 内容 -->
+</div>
+```
+建议尽可能在使用 v-for 时提供 key attribute，除非遍历输出的 DOM 内容非常简单，或者是刻意依赖默认行为以获取性能上的提升。
+
+ **v-for中的key有什么作用？什么是虚拟DOM？**
+* 有key的操作:
+
+  * 根据key找到之前的VNode进行复用;
+  * 没有VNode可以复用, 再创建新的VNode
+
+* 没有key的操作:
+
+  * diff算法, 后续VNode复用性就不强
+
+* VNode
+
+  ```
+  1.VNode的全称是Virtual Node，也就是虚拟节点
+  2.VNode的本质是一个JavaScript的对象
+  3.template元素 ->解析成 VNode--->转换为真实DOM元素
+  ```
+
+* 虚拟DOM
+
+  * template元素--->一个个VNode虚拟节点--->VNode Tree -->虚拟DOM--->真实DOM
+
+  * 作用
+    * 方便进行diff算法
+    * 方便进行跨平台
+
+
+### 9 computed 计算属性
+对于任何包含响应式数据的复杂逻辑，你都应该使用计算属性。
+
+```html
+<body>
+
+  <div id="app">
+    <!-- 1.拼接名字 -->
+    <h2>{{ fullname }}</h2>
+    <h2>{{ fullname }}</h2>
+    <h2>{{ fullname }}</h2>
+
+    <!-- 2.显示分数等级 -->
+    <h2>{{ scoreLevel }}</h2>
+
+    <!-- 3.反转单词显示文本 -->
+    <h2>{{ reverseMessage }}</h2>
+  </div>
+  
+  <script src="../lib/vue.js"></script>
+  <script>
+    // 1.创建app
+    const app = Vue.createApp({
+      // data: option api
+      data() {
+        return {
+          // 1.姓名
+          firstName: "kobe",
+          lastName: "bryant",
+
+          // 2.分数: 及格/不及格
+          score: 80,
+
+          // 3.一串文本: 对文本中的单词进行反转显示
+          message: "my name is why"
+        }
+      },
+      computed: {
+        // 1.计算属性默认对应的是一个函数
+        fullname() {
+          return this.firstName + " " + this.lastName
+        },
+
+        scoreLevel() {
+          return this.score >= 60 ? "及格": "不及格"
+        },
+
+        reverseMessage() {
+          return this.message.split(" ").reverse().join(" ")
+        }
+      }
+    })
+
+    // 2.挂载app
+    app.mount("#app")
+  </script>
+</body>
+```
+**什么是计算属性？和method有什么区别？**
+
+* 计算属性
+
+  * 可以通过this访问数据
+  * 对于任何包含响应式数据的赋值逻辑,你应该使用计算属性
+
+* 和method的区别
+
+  * computed底层会缓存, 性能更高
+  * 计算属性会基于它们的依赖关系进行缓存;
+  * 在数据不发生变化时，计算属性是不需要重新计算的
+  * 但是如果依赖的数据发生变化，在使用时，计算属性依然会重新进行计算
+### 10 watch
+watch 需要侦听特定的数据源，并在单独的回调函数中执行副作用。默认情况下，它也是惰性的——即回调仅在侦听源发生变化时被调用。
+```html
+<body>
+
+  <div id="app">
+    <h2>{{message}}</h2>
+    <button @click="changeMessage">修改message</button>
+  </div>
+  
+  <script src="../lib/vue.js"></script>
+  <script>
+    // Proxy -> Reflect
+    // 1.创建app
+    const app = Vue.createApp({
+      // data: option api
+      data() {
+        return {
+          message: "Hello Vue",
+          info: { name: "why", age: 18 }
+        }
+      },
+      methods: {
+        changeMessage() {
+          this.message = "你好啊, 李银河!"
+          this.info = { name: "kobe" }
+        }
+      },
+      watch: {
+        // 1.默认有两个参数: newValue/oldValue
+        message(newValue, oldValue) {
+          console.log("message数据发生了变化:", newValue, oldValue)
+        },
+        info(newValue, oldValue) {
+          // 2.如果是对象类型, 那么拿到的是代理对象
+          // console.log("info数据发生了变化:", newValue, oldValue)
+          // console.log(newValue.name, oldValue.name)
+
+          // 3.获取原生对象
+          console.log(Vue.toRaw(newValue))
+        }
+      }
+    })
+
+    // 2.挂载app
+    app.mount("#app")
+  </script>
+</body>
+```
+#### 10.1 watch的侦听选项
+```js
+watch: {
+        // 默认watch监听不会进行深度监听（如果只改变其中某个属性值，不会被监听到）
+        // info(newValue, oldValue) {
+        //   console.log("侦听到info改变:", newValue, oldValue)
+        // }
+
+        // 进行深度监听
+        info: {
+          handler(newValue, oldValue) {
+            console.log("侦听到info改变:", newValue, oldValue)
+            console.log(newValue === oldValue)
+          },
+          // 监听器选项:
+          // info进行深度监听
+          deep: true,
+          // 第一次渲染直接执行一次监听器
+          immediate: true
+        },
+        "info.name": function(newValue, oldValue) {
+          console.log("name发生改变:", newValue, oldValue)
+        }
+      }
+```
 
 
 
 
-
-
-
-
-
+1组件命名用-连接比较多
+2实际开发中很少注册全局组件，99%都是局部组件
