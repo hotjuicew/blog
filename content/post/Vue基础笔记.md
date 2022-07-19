@@ -744,8 +744,532 @@ watch: {
       }
 ```
 
+### 11 购物车案例
+```html
+<body>
+  
+  <div id="app">
+    <template v-if="books.length">
+      <table>
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th>书籍名称</th>
+            <th>出版日期</th>
+            <th>价格</th>
+            <th>购买数量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in books">
+            <td>{{index+1}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.date}}</td>
+            <td>{{item.price}}</td>
+            <td>
+              <button :disabled="item.count <= 0" @click="decrement(index)">-</button>
+              {{item.count}}
+              <button @click="increment(index)">+</button>
+            </td>
+            <td>
+              <button @click="removeItem(index)">移除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>总价格: {{totalPrice}}</h2>
+    </template>
+    <template v-else>
+      <h2>购物车为空, 请添加商品~</h2>
+    </template>
+  </div>
+
+  <script src="../lib/vue.js"></script>
+  <script src="./data.js"></script>
+  <script src="index.js"></script>
+
+</body>
+```
+```js
+const app = Vue.createApp({
+  data: function() {
+    return {
+      books
+    }
+  },
+  computed: {
+    totalPrice() {
+      return this.books.reduce((preValue, item) => {
+        return preValue + item.count * item.price
+      }, 0)
+    }
+  },
+  methods: {
+    removeItem(index) {
+      this.books.splice(index, 1)
+    },
+    increment(index) {
+      this.books[index].count++
+    },
+    decrement(index) {
+      this.books[index].count--
+    }
+  }
+})
+
+app.mount("#app")
+```
+### 12 列表的选中
+```html
+  <div id="app">
+    <ul>
+      <!-- <h2 :class="{title: false}"></h2> -->
+
+      <!-- 对active的class进行动态绑定 -->
+      <!-- 需求一: 将索引值为1的li添加上active -->
+      <!-- 需求二：用一个变量（属性）记录当前点击的位置 -->
+      <li :class="{active: index === currentIndex}"
+          @click="liClick(index)"
+          v-for="(item, index) in movies">
+        {{item}}
+      </li>
+    </ul>
+  </div>
+  
+  <script src="../lib/vue.js"></script>
+  <script>
+    // 1.创建app
+    const app = Vue.createApp({
+      // data: option api
+      data() {
+        return {
+          movies: ["星际穿越", "阿凡达", "大话西游", "黑客帝国"],
+          currentIndex: -1
+        }
+      },
+      methods: {
+        liClick(index) {
+          console.log("liClick:", index)
+          this.currentIndex = index
+        }
+      }
+    })
+
+    // 2.挂载app
+    app.mount("#app")
+  </script>
+</body>
+```
+
+### 13 Vue的双向绑定v-model
+v-model作用于`<input>`,`<select>`,`<textarea>`,`components`等，使她们和data中的数据相绑定
+
+**什么是双向绑定？v-model的本质是什么**
+双向绑定:
+
+* 即当数据发生变化的时候，视图也就发生变化，当视图发生变化的时候，数据也会跟着同步变化
+* v-model 是语法糖，它负责监听用户的输入事件来更新数据
+
+v-model的原理
+
+* v-bind绑定value属性的值
+* v-on绑定input事件监听到函数,函数会获取最新的值赋值到绑定的属性中
+
+#### 13.1 v-model绑定input
+```html
+<label for="account">
+      账号:<input id="account" type="text" v-model="account">
+    </label>
+    <label for="password">
+      密码:<input id="password" type="password" v-model="password">
+    </label>
+  ```
+```js
+data() {
+        return {
+          message: "Hello Model",
+          account: "",
+          password: ""
+        }
+      },
+```
+#### 13.2 v-model绑定textarea
+```html
+<textarea cols="30" rows="10" v-model="content"></textarea>
+```
+```js
+ data() {
+        return {
+          content: ""
+        }
+      },
+```
+#### 13.3 v-model绑定checkbox
+```html
+ <!-- 1.checkbox单选框: 绑定到属性中的值是一个Boolean -->
+    <label for="agree">
+      <input id="agree" type="checkbox" v-model="isAgree"> 同意协议
+    </label>
+    <h2>单选框: {{isAgree}}</h2>
+    <hr>
+
+    <!-- 2.checkbox多选框: 绑定到属性中的值是一个Array -->
+    <!-- 注意: 多选框当中, 必须明确的绑定一个value值 -->
+    <div class="hobbies">
+      <h2>请选择你的爱好:</h2>
+      <label for="sing">
+        <input id="sing" type="checkbox" v-model="hobbies" value="sing"> 唱
+      </label>
+      <label for="jump">
+        <input id="jump" type="checkbox" v-model="hobbies" value="jump"> 跳
+      </label>
+      <label for="rap">
+        <input id="rap" type="checkbox" v-model="hobbies" value="rap"> rap
+      </label>
+      <label for="basketball">
+        <input id="basketball" type="checkbox" v-model="hobbies" value="basketball"> 篮球
+      </label>
+      <h2>爱好: {{hobbies}}</h2>
+    </div>
+```
+```js
+data() {
+        return {
+          isAgree: false,
+          hobbies: []
+        }
+      },
+```
+#### 13.4 v-model绑定radio
+```html
+<div class="gender">
+      <label for="male">
+        <input id="male" type="radio" v-model="gender" value="male"> 男
+      </label>
+      <label for="female">
+        <input id="female" type="radio" v-model="gender" value="female"> 女
+      </label>
+      <h2>性别: {{gender}}</h2>
+    </div>
+```
+```js
+data() {
+        return {
+          gender: "female"
+        }
+      },
+```
+#### 13.5 v-model绑定radiov-model绑定select
+```html
+<!-- select的单选 -->
+    <select v-model="fruit">
+      <option value="apple">苹果</option>
+      <option value="orange">橘子</option>
+      <option value="banana">香蕉</option>
+    </select>
+    <h2>单选: {{fruit}}</h2>
+    <hr>
+    
+    <!-- select的多选 -->
+    <select multiple size="3" v-model="fruits">
+      <option value="apple">苹果</option>
+      <option value="orange">橘子</option>
+      <option value="banana">香蕉</option>
+    </select>
+    <h2>多选: {{fruits}}</h2>
+```
+```js
+data() {
+        return {
+          fruit: "orange",
+          fruits: []
+        }
+```
+#### 13.6 model的值绑定
+```html
+<!-- 1.select的值绑定 -->
+    <select multiple size="3" v-model="fruits">
+      <option v-for="item in allFruits" 
+              :key="item.value" 
+              :value="item.value">
+        {{item.text}}
+      </option>
+    </select>
+    <h2>多选: {{fruits}}</h2>
+
+    <hr>
+
+    <!-- 2.checkbox的值绑定 -->
+    <div class="hobbies">
+      <h2>请选择你的爱好:</h2>
+      <template v-for="item in allHobbies" :key="item.value">
+        <label :for="item.value">
+          <input :id="item.value" type="checkbox" v-model="hobbies" :value="item.value"> {{item.text}}
+        </label>
+      </template>
+      <h2>爱好: {{hobbies}}</h2>
+    </div>
+```
+#### 13.7 v-model的修饰符
+```html
+<!-- 1.lazy: 绑定change事件  -->
+    <input type="text" v-model.lazy="message">
+    <h2>message: {{message}}</h2>
+
+    <hr>
+
+    <!-- 2.number: 自动将内容转换成数字 -->
+    <input type="text" v-model.number="counter">
+    <h2>counter:{{counter}}-{{typeof counter}}</h2>
+
+    <input type="number" v-model="counter2">
+    <h2>counter2:{{counter2}}-{{typeof counter2}}</h2>
+
+    <hr>
+
+    <!-- 3.trim: 去除收尾的空格 -->
+    <input type="text" v-model.trim="content">
+    <h2>content: {{content}}</h2>
+
+    <hr>
+
+    <!-- 4.使用多个修饰符 -->
+    <input type="text" v-model.lazy.trim="content">
+    <h2>content: {{content}}</h2>
+  </div>
+```
+### 14 组件化开发
+* 组件命名用-连接比较多
+* 实际开发中很少注册全局组件，99%都是局部组件
+  
+**什么是组件化开发？有什么作用？**
+  * 组件化开发
+
+    * 我们将一个完整的页面分成很多个组件；
+
+    * 每个组件都用于实现页面的一个功能块；
+    * 而每一个组件又可以进行细分；
+    * 而组件本身又可以在多个地方进行复用
+
+  * 作用
+    * 可复用
+    * 方便整个页面的管理和维护
+
+**Vue中注册全局组件和局部组件有什么区别？**
+
+* 全局组件：在任何其他的组件中都可以使用的组件；
+
+* 局部组件：只有在注册的组件中才能使用的组件
+
+**什么是Vue CLI，如何使用它创建Vue项目？**
+* Vue CLI
+  * Vue的脚手架,可以通过它选择项目的配置,并且创建出我们的项目
+  * Vue CLI已经内置了webpack相关的配置，我们不需要从零来配置
+ 
+![vue项目生成的两种方式](../../static/images/blog/2022/1.jpg)
+
+#### 14.1 Vue CLI 的安装和使用
+```bash
+# 安装
+npm install @vue/cli -g
+
+# 升级
+npm update @vue/cli -g
+
+# 使用
+vue create 项目的名称
+```
+**Vue项目目录结构中各个文件的作用**
+
+```
+node_modules:  安装的所有依赖包
+
+public： public目录存放的是一些公用文件
+   ---favicon.ico  图标
+   ---index.html   打包webpack时所需要的的HTML 模板
+   
+src  存放vue项目的源代码
+   --assets: 资源文件,比如存放css,图片等资源
+   --components: 组件文件夹
+   --APP.vue   根组件
+   --main.js  项目的入口文件
+   
+.browserslistrc    设置目标浏览器,进行浏览器适配
+
+.gitignore     git的忽略文件
+
+babel.config.js    babel的配置
+
+jsconfig.json   给vscode进行读取,vscode在读取到其中的内容时,给我们代码更加友好的提示
+
+package-lock.json    项目包的锁定文件,npm install 可以通过package-lock文件来检测lock中包的版本是否和package.json中一致 ---一致,会优先查找缓存,不一致,就会重新构建依赖关系
+
+package.json  npm配置文件,记录这你项目的名称,版本号,项目描述,也记录项目所依赖的其他库的信息和依赖库的版本号
+
+README.md    项目说明(描述)
+
+vue.config.js   vue 的配置文件
+```
+#### 组件的嵌套使用
+组件内部举例
+```html
+<template>
+  <div class="app-header">
+    <h1 class="title">
+      我是大标题
+    </h1>
+    <h2 class="subtitle">
+      我是小标题
+    </h2>
+  </div>
+</template>
 
 
+<script>
+  export default {
+  }
+</script>
 
-1组件命名用-连接比较多
-2实际开发中很少注册全局组件，99%都是局部组件
+<!-- 加上scoped是限定作用域的意思，不会作用到全局了 -->
+<style scoped>
+</style>
+```
+App.vue举例
+```html
+<template>
+  <div class="app">
+    <h2 class="title">我是App.vue中的h2元素</h2>
+
+    <!-- AppHeader -->
+    <AppHeader></AppHeader>
+  </div>
+</template>
+
+<script>
+
+import AppHeader from "./components/AppHeader"
+
+export default {
+  name: 'App',
+  components: {
+    AppHeader
+  }
+}
+</script>
+
+<style scoped>
+  .title {
+    color: red;
+  }
+</style>
+```
+### 15 Vue的runtime和runtime+comiple的版本区别
+
+- runtime版本意味着 没有对模板的编译 需要自己写对应的render函数(返回h函数)或者setup返回一个函数 函数的返回值是h函数
+  - 没有将模板转成vnode节点这一过程 
+- runtime+comiple 版本 是可以将template模板通过compile转换成对应的vnode节点 
+
+### 16 组件通信
+#### 16.1 父传子
+
+`父组件App.vue`
+```html
+<template>
+  <!-- 1.展示why的个人信息 -->
+  <!-- 如果当前的属性是一个非prop的attribute, 那么该属性会默认添加到子组件的根元素上 -->
+  <show-info name="why" :age="18" :height="1.88" 
+             address="广州市" abc="cba" class="active" />
+
+  <!-- 2.展示kobe的个人信息 -->
+  <show-info name="kobe" :age="30" :height="1.87" />
+
+  <!-- 3.展示默认的个人信息 -->
+<!--  Prop的大小写命名(camelCase vs kebab-case)-->
+<!--  HTML中的attribute名是大小写不敏感的，所以浏览器会把所有大写字符解释为小写字符;-->
+<!--  这意味着当你使用DOM中的模板时，camelCase (驼峰命名法)的prop名需要使用其等价的kebab-case (短横线分隔命名)命名;-->
+  <show-info :age="100" show-message="哈哈哈哈"/>
+
+</template>
+
+<script>
+  import ShowInfo from './ShowInfo.vue'
+
+  export default {
+    components: {
+      ShowInfo
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+```
+
+`子组件ShowInfo.vue`
+```html
+<template>
+  <div class="infos">
+    <h2 :class="$attrs.class">姓名: {{ name }}</h2>
+    <h2>年龄: {{ age }}</h2>
+    <h2>身高: {{ height }}</h2>
+
+    <h2>Message: {{ showMessage }}</h2>
+  </div>
+
+  <div class="others" v-bind="$attrs"></div>
+</template>
+
+<script>
+  export default {
+    // inheritAttrs: false,
+    
+    // 作用: 接收父组件传递过来的属性
+    // 1.props数组语法
+    // 弊端: 1> 不能对类型进行验证 2.没有默认值的
+    // props: ["name", "age", "height"]
+
+    // 2.props对象语法(必须掌握)
+    props: {
+      name: {
+        type: String,
+        default: "我是默认name"
+      },
+      age: {
+        type: Number,
+        required: true,
+        default: 0
+      },
+      height: {
+        type: Number,
+        default: 2
+      },
+      // 重要的原则: 对象类型写默认值时, 需要编写default的函数, 函数返回默认值
+      friend: {
+        type: Object,
+        default(){
+          return {name:'james'}
+        }
+      },
+      hobbies: {
+        type: Array,
+        default: () => ["篮球", "rap", "唱跳"]
+      },
+      // Prop的大小写命名(camelCase vs kebab-case)
+      // HTML中的attribute名是大小写不敏感的，所以浏览器会把所有大写字符解释为小写字符;
+      // 这意味着当你使用DOM中的模板时，camelCase (驼峰命名法)的prop名需要使用其等价的kebab-case (短横线分隔命名)命名;
+      showMessage: {
+        type: String,
+        default: "我是showMessage"
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+```
+### 16.2 子传父
+
+
+如果是对象类型，写默认值的时候必须写成函数形式，函数返回一个对象
