@@ -1171,8 +1171,42 @@ export default {
 - runtime+comiple 版本 是可以将template模板通过compile转换成对应的vnode节点 
 
 ### 16 组件通信
-#### 16.1 父传子
+父子组件之间如何进行通信呢？
+- 父组件传递给子组件：通过props属性（需要在子组件中注册）；
+- 子组件传递给父组件：通过$emit触发事件（在子组件methods中）；
 
+#### 16.1 父传子
+父组件数据传入子组件
+
+- ```js
+  <child :title="hello " :message="child" :list="[1,2,3]"/>
+  ```
+
+子组件接收父组件传入的值
+
+- ```js
+  export default {
+      // 需要注意的是 传入的数据需要在子组件中进行注册
+      // 如果不注册 则被当作 attr 的参数 可以通过$attr.的方式在template进行访问 或者会自动进行同类型的合并
+      props: ["title", "message", "list"] // 数组写法
+      props: {
+          title: {
+              type: String,
+              default: "wmm"
+          },
+      	message: {
+            	type: String,
+          	default: "111"
+          },
+           // 对象类型的数据的默认值为一个函数
+           list: {
+               type: Array,
+               default: ()=>([1,2,3])
+           },
+  }
+  }
+  ```
+请看以下案例
 `父组件App.vue`
 ```html
 <template>
@@ -1269,7 +1303,111 @@ export default {
 <style scoped>
 </style>
 ```
+#### 16.1.1 非Prop的Attribute
+什么是非Prop的Attribute呢？
+- 当我们传递给一个组件某个属性，但是该属性并没有定义对应的props或者emits时，就称之为 非Prop的Attribute；
+- 常见的包括class、style、id属性等；
+- 当组件有单个根节点时，非Prop的Attribute将自动添加到根节点的Attribute中：
+![img](../../static/images/blog/2022/2.png)
+
+#### 16.1.2 禁用Attribute继承
+ 如果我们不希望组件的根元素继承attribute，可以在组件中设置 inheritAttrs: false
+- 禁用attribute继承的常见情况是需要将attribute应用于根元素之外的其他元素；
+- 我们可以通过 $attrs来访问所有的 非props的attribute；
+```html
+<div>
+    我是NotPropAttribute组件
+    <h2 :class="$attr.class"></h2>
+  </div>
+```
 ### 16.2 子传父
+什么情况下子组件需要传递内容到父组件呢？
+- 当子组件有一些事件发生的时候，比如在组件中发生了点击，父组件需要切换内容；
+- 子组件有一些内容想要传递给父组件的时候；
+  
+我们如何完成上面的操作呢？
+1. 我们需要在子组件中定义好在某些情况下触发的事件名称,触发之后通过 this.$emit的方式发出去事件；
+2. 在父组件中以v-on的方式传入要监听的事件名称，并且绑定到对应的方法中；
+3. 在子组件中发生某个事件的时候，根据事件名称触发对应的事件；
 
+`App.vue`
+```html
+<template>
+  <div class="app">
+    <h2>当前计数: {{ counter }}</h2>
 
-如果是对象类型，写默认值的时候必须写成函数形式，函数返回一个对象
+    <!-- 1.自定义add-counter, 并且监听内部的add事件 -->
+    <add-counter @add="addBtnClick"></add-counter>
+
+    <!-- 2.自定义sub-counter, 并且监听内部的sub事件 -->
+    <sub-counter @sub="subBtnClick"></sub-counter>
+  </div>
+</template>
+
+<script>
+  import AddCounter from './AddCounter.vue'
+  import SubCounter from './SubCounter.vue'
+
+  export default {
+    components: {
+      AddCounter,
+      SubCounter
+    },
+    data() {
+      return {
+        counter: 0
+      }
+    },
+    methods: {
+      addBtnClick(count) {
+        this.counter += count
+      },
+      subBtnClick(count) {
+        this.counter -= count
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+```
+`AddCounter.vue`
+```html
+<template>
+  <div class="add">
+    <button @click="btnClick(1)">+1</button>
+    <button @click="btnClick(5)">+5</button>
+    <button @click="btnClick(10)">+10</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    // 1.emits数组语法
+    emits: ["add"],
+    // 2.emmits对象语法
+    // emits: {
+    //   add: function(count) {
+    //     if (count <= 10) {
+    //       return true
+    //     }
+    //     return false
+    //   }
+    // },
+    methods: {
+      btnClick(count) {
+        console.log("btnClick:", count)
+        // 让子组件发出去一个自定义事件
+        // 第一个参数自定义的事件名称
+        // 第二个参数是传递的参数
+        this.$emit("add", 100)
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+```
+
