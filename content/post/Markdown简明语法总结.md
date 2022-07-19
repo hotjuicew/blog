@@ -1,8 +1,8 @@
 ---
 title: "Markdown简明语法总结"
 date: 2022-07-18T12:08:30+08:00
-categories: ["实用工具"]
-tags: []
+categories: ["工具"]
+tags: ["Markdown"]
 ---
 ### 1.斜体和加粗
 #### 斜体：使用下划线` _ ` 包裹文本
