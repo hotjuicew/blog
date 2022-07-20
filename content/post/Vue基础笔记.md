@@ -1067,7 +1067,7 @@ data() {
   * Vue的脚手架,可以通过它选择项目的配置,并且创建出我们的项目
   * Vue CLI已经内置了webpack相关的配置，我们不需要从零来配置
  
-![vue项目生成的两种方式](../../static/images/blog/2022/1.jpg)
+![vue项目生成的两种方式](/images/blog/2022/1.jpg)
 
 #### 14.1 Vue CLI 的安装和使用
 ```bash
@@ -1308,7 +1308,7 @@ export default {
 - 当我们传递给一个组件某个属性，但是该属性并没有定义对应的props或者emits时，就称之为 非Prop的Attribute；
 - 常见的包括class、style、id属性等；
 - 当组件有单个根节点时，非Prop的Attribute将自动添加到根节点的Attribute中：
-![img](../../static/images/blog/2022/2.png)
+![img](/images/blog/2022/2.png)
 
 #### 16.1.2 禁用Attribute继承
  如果我们不希望组件的根元素继承attribute，可以在组件中设置 inheritAttrs: false
@@ -1326,7 +1326,7 @@ export default {
 - 子组件有一些内容想要传递给父组件的时候；
   
 我们如何完成上面的操作呢？
-![img](../../static/images/blog/2022/3.jpg)
+![img](/images/blog/2022/3.jpg)
 1. 我们需要在子组件监听触发的事件，并写一个方法，在方法中用this.$emit的方式自定义事件的名称和参数；
 2. 在父组件中监听的事件名称，并且绑定到对应的方法中；
 
@@ -1413,7 +1413,7 @@ export default {
 ```
 ### 17  插槽Slot
 插槽就是写组件的时候不给她写死，留一些插槽供使用者灵活添加
-![img](../../static/images/blog/2022/4.jpg)
+![img](/images/blog/2022/4.jpg)
 
 #### 17.1 基本使用
 `App.vue`
@@ -1524,13 +1524,11 @@ export default {
 - 父级模板里的所有内容都是在父级作用域中编译的；
 - 子模板里的所有内容都是在子作用域中编译的；
   - 如何理解这句话呢？我们来看一个案例：
-  -  ![img](/static/images/blog/2022/7.png)
-  -  ![img]( https://v3.cn.vuejs.org/images/slot.png)
+  -  ![img](/images/blog/2022/7.png)
   - 
-  ![img](../../static/images/blog/2022/7.png)
+  ![img](/images/blog/2022/7.png)
     - 在我们的案例中ChildCpn自然是可以让问自己作用域中的title内容的；
     - 但是在App中，是访问不了ChildCpn中的内容的，因为它们是跨作用域的访问；
-
 下面是一个作用域插槽的例子
-![img](../../static/images/blog/2022/5.jpg)
-![img](../../static/images/blog/2022/6.png)
+![img](/images/blog/2022/5.jpg)
+![img](/images/blog/2022/6.png)
