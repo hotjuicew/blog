@@ -1525,6 +1525,8 @@ export default {
 - 子模板里的所有内容都是在子作用域中编译的；
   - 如何理解这句话呢？我们来看一个案例：
   -  ![img](/static/images/blog/2022/7.png)
+  -  ![img]( https://v3.cn.vuejs.org/images/slot.png)
+  - 
   ![img](../../static/images/blog/2022/7.png)
     - 在我们的案例中ChildCpn自然是可以让问自己作用域中的title内容的；
     - 但是在App中，是访问不了ChildCpn中的内容的，因为它们是跨作用域的访问；
