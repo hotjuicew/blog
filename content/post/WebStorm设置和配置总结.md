@@ -16,6 +16,7 @@ tags: ["WebStorm"]
   - Mouse Control — 鼠标控制
       - Change font size with Ctrl+Mouse Wheel — 使用Ctrl+鼠标滚轮更改字体大小。（**选中**，可以随时改变编辑区的字体大小）
       - Move code fragments with drag-and-drop — 在编辑器中拖放代码片段（**选中**，可以直接用鼠标托代码，不用记住快捷键了）
+  - Code completion, Case sensitive completion **选中**
 - **Font** 我设置了fontsize为16，这个之后可以随时用鼠标改
 - **File and Code Templates** 在右面的界面里面，就可以选择你需要的文件，在里面修改成你需要的默认模板。以后你每次创建新的文件的时候，都会默认为你设置的代码。
   比如每次新建vue文件都会用到这个基本模板，所以我们可以在webStorm中保存为文件模板
@@ -48,5 +49,5 @@ tags: ["WebStorm"]
 - **Rainbow Brackets**
 - **Translation**
 安装完成后，在编辑器中输入中文，右键即可翻译。为变量起名时可以用
--**.ignore**
+- **.ignore**
 我们在项目中不想让把某个文件上传到git，通常情况下我们需要自己往.gitignore文件中去添加要忽略的文件，在webstorm中有一款名为.ignore的插件，可以通过右键不想上传的文件即可实现将其添加到配置文件中。

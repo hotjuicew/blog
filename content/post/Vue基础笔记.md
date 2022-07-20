@@ -1326,9 +1326,10 @@ export default {
 - 子组件有一些内容想要传递给父组件的时候；
   
 我们如何完成上面的操作呢？
-1. 我们需要在子组件中定义好在某些情况下触发的事件名称,触发之后通过 this.$emit的方式发出去事件；
-2. 在父组件中以v-on的方式传入要监听的事件名称，并且绑定到对应的方法中；
-3. 在子组件中发生某个事件的时候，根据事件名称触发对应的事件；
+![img](../../static/images/blog/2022/3.jpg)
+1. 我们需要在子组件监听触发的事件，并写一个方法，在方法中用this.$emit的方式自定义事件的名称和参数；
+2. 在父组件中监听的事件名称，并且绑定到对应的方法中；
+
 
 `App.vue`
 ```html
@@ -1410,4 +1411,122 @@ export default {
 <style scoped>
 </style>
 ```
+### 17  插槽Slot
+插槽就是写组件的时候不给她写死，留一些插槽供使用者灵活添加
+![img](../../static/images/blog/2022/4.jpg)
 
+#### 17.1 基本使用
+`App.vue`
+```html
+<template>
+  <div class="app">
+    <!-- 1.内容是button -->
+    <show-message title="哈哈哈">
+      <button>我是按钮元素</button>
+    </show-message>
+
+    <!-- 2.内容是超链接 -->
+    <show-message>
+      <a href="#">百度一下</a>
+    </show-message>
+
+    <!-- 3.内容是一张图片 -->
+    <show-message>
+      <img src="@/img/kobe02.png" alt="">
+    </show-message>
+
+    <!-- 4.内容没有传递 -->
+    <show-message></show-message>
+  </div>
+</template>
+
+<script>
+  import ShowMessage from './ShowMessage.vue'
+
+  export default {
+    components: {
+      ShowMessage
+    }
+  }
+</script>
+```
+`ShowMessage.vue`
+```html
+<template>
+  <h2>{{ title }}</h2>
+  <div class="content">
+    <slot>
+      <!-- 什么都没有传的时候就会使用默认值 -->
+      <p>我是默认内容, 哈哈哈</p>
+    </slot>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: {
+      title: {
+        type: String,
+        default: "我是title默认值"
+      }
+    }
+  }
+</script>
+```
+#### 17.2 具名插槽
+名插槽顾名思义就是给插槽起一个名字，<slot> 元素有一个特殊的 attribute：name
+一个不带 name 的slot，会带有隐含的名字 default
+`App.vue`
+```html
+<template>
+  <nav-bar>
+    <!-- #是v-slot:的简写，后面跟上要插的插槽的名字 -->
+    <template #left>
+      <button>{{ leftText }}</button>
+    </template>
+
+    <template #center>
+      <span>内容</span>
+    </template>
+
+    <template v-slot:right>
+      <a href="#">登录</a>
+    </template>
+  </nav-bar>
+
+</template>
+```
+`NavBar.vue`
+```html
+<template>
+  <div class="nav-bar">
+    <div class="left">
+      <!-- 给每个插槽取名字 -->
+      <slot name="left">left</slot>
+    </div>
+    <div class="center">
+      <slot name="center">center</slot>
+    </div>
+    <div class="right">
+      <slot name="right">right</slot>
+    </div>
+  </div>
+
+  <div class="other">
+    <slot name="default"></slot>
+  </div>
+</template>
+```
+#### 17.3 作用域插槽
+将子组件中的数据传递给父组件的插槽来使用
+
+**在Vue中有渲染作用域的概念**：
+- 父级模板里的所有内容都是在父级作用域中编译的；
+- 子模板里的所有内容都是在子作用域中编译的；
+  - 如何理解这句话呢？我们来看一个案例：
+  ![img](../../static/images/blog/2022/7.png)
+    - 在我们的案例中ChildCpn自然是可以让问自己作用域中的title内容的；
+    - 但是在App中，是访问不了ChildCpn中的内容的，因为它们是跨作用域的访问；
+
+![img](../../static/images/blog/2022/5.jpg)
+![img](../../static/images/blog/2022/6.jpg)
