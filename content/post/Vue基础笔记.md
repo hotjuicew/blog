@@ -1528,5 +1528,6 @@ export default {
     - 在我们的案例中ChildCpn自然是可以让问自己作用域中的title内容的；
     - 但是在App中，是访问不了ChildCpn中的内容的，因为它们是跨作用域的访问；
 
-![img](../../static/images/blog/2022/5.jpg)
-![img](../../static/images/blog/2022/6.jpg)
+下面是一个作用域插槽的例子
+![img](https://github.com/hotjuicew/blog/blob/master/static/images/blog/2022/5.jpg)
+![img](https://github.com/hotjuicew/blog/blob/master/static/images/blog/2022/6.png)
