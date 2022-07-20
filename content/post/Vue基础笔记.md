@@ -1525,10 +1525,23 @@ export default {
 - 子模板里的所有内容都是在子作用域中编译的；
   - 如何理解这句话呢？我们来看一个案例：
   -  ![img](/images/blog/2022/7.png)
-  - 
-  ![img](/images/blog/2022/7.png)
+
     - 在我们的案例中ChildCpn自然是可以让问自己作用域中的title内容的；
     - 但是在App中，是访问不了ChildCpn中的内容的，因为它们是跨作用域的访问；
+
 下面是一个作用域插槽的例子
 ![img](/images/blog/2022/5.jpg)
 ![img](/images/blog/2022/6.png)
+
+### 18 非父子组件的通信
+两种方式：
+- 全局事件总线
+- Provide/Inject
+#### 18.1 全局事件总线mitt库
+#### 18.2 Provide/Inject(在开发中用得非常少)
+无论层级结构有多深，父组件都可以作为其所有子组件的依赖
+提供者；
+- 父组件有一个 provide 选项来提供数据；（provide一般都是写成函数的）
+- 子组件有一个 inject 选项来开始使用这些数据；
+  ![img](https://v3.cn.vuejs.org/images/components_provide.png)
+
