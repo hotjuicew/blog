@@ -3,7 +3,6 @@ title: "WebStorm设置和配置总结"
 date: 2022-07-19T15:48:10+08:00
 categories: ["工具"]
 tags: ["WebStorm"]
-draft: true
 ---
 
 ## Appearance & Behavior
