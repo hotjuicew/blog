@@ -1537,11 +1537,19 @@ export default {
 两种方式：
 - 全局事件总线
 - Provide/Inject
-#### 18.1 全局事件总线mitt库
+#### 18.1 全局事件总线 
+可以用Hy event store库
+
 #### 18.2 Provide/Inject(在开发中用得非常少)
 无论层级结构有多深，父组件都可以作为其所有子组件的依赖
 提供者；
 - 父组件有一个 provide 选项来提供数据；（provide一般都是写成函数的）
 - 子组件有一个 inject 选项来开始使用这些数据；
   ![img](https://v3.cn.vuejs.org/images/components_provide.png)
+
+### 19.
+
+
+
+![img](/images/blog/2022/生命周期的历程.png)
 
