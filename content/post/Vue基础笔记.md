@@ -1152,10 +1152,12 @@ data() {
   </div>
 ```
 
-### 14 组件化开发
+## 组件化开发
 
 - 组件命名用-连接比较多
 - 实际开发中很少注册全局组件，99%都是局部组件
+
+### 1.组件化开发
 
 **什么是组件化开发？有什么作用？**
 
@@ -1185,7 +1187,7 @@ data() {
 
 ![vue项目生成的两种方式](/images/blog/2022/1.jpg)
 
-#### 14.1 Vue CLI 的安装和使用
+#### 1.1 Vue CLI 的安装和使用
 
 ```bash
 # 安装
@@ -1230,7 +1232,7 @@ README.md    项目说明(描述)
 vue.config.js   vue 的配置文件
 ```
 
-#### 组件的嵌套使用
+#### 1.2组件的嵌套使用
 
 组件内部举例
 
@@ -1280,20 +1282,20 @@ App.vue 举例
 </style>
 ```
 
-### 15 Vue 的 runtime 和 runtime+comiple 的版本区别
+### 2 Vue 的 runtime 和 runtime+comiple 的版本区别
 
 - runtime 版本意味着 没有对模板的编译 需要自己写对应的 render 函数(返回 h 函数)或者 setup 返回一个函数 函数的返回值是 h 函数
   - 没有将模板转成 vnode 节点这一过程
 - runtime+comiple 版本 是可以将 template 模板通过 compile 转换成对应的 vnode 节点
 
-### 16 组件通信
+### 3 组件通信
 
 父子组件之间如何进行通信呢？
 
 - 父组件传递给子组件：通过 props 属性（需要在子组件中注册）；
 - 子组件传递给父组件：通过$emit 触发事件（在子组件 methods 中）；
 
-#### 16.1 父传子
+#### 3.1 父传子
 
 父组件数据传入子组件
 
@@ -1428,7 +1430,7 @@ App.vue 举例
 <style scoped></style>
 ```
 
-#### 16.1.1 非 Prop 的 Attribute
+#### 3.1.1 非 Prop 的 Attribute
 
 什么是非 Prop 的 Attribute 呢？
 
@@ -1437,7 +1439,7 @@ App.vue 举例
 - 当组件有单个根节点时，非 Prop 的 Attribute 将自动添加到根节点的 Attribute 中：
   ![img](/images/blog/2022/2.png)
 
-#### 16.1.2 禁用 Attribute 继承
+#### 3.1.2 禁用 Attribute 继承
 
 如果我们不希望组件的根元素继承 attribute，可以在组件中设置 inheritAttrs: false
 
@@ -1451,7 +1453,7 @@ App.vue 举例
 </div>
 ```
 
-### 16.2 子传父
+### 3.2 子传父
 
 什么情况下子组件需要传递内容到父组件呢？
 
@@ -1546,12 +1548,12 @@ App.vue 举例
 <style scoped></style>
 ```
 
-### 17 插槽 Slot
+### 4 插槽 Slot
 
 插槽就是写组件的时候不给她写死，留一些插槽供使用者灵活添加
 ![img](/images/blog/2022/4.jpg)
 
-#### 17.1 基本使用
+#### 4.1 基本使用
 
 `App.vue`
 
@@ -1614,7 +1616,7 @@ App.vue 举例
 </script>
 ```
 
-#### 17.2 具名插槽
+#### 4.2 具名插槽
 
 名插槽顾名思义就是给插槽起一个名字，<slot> 元素有一个特殊的 attribute：name
 一个不带 name 的 slot，会带有隐含的名字 default
@@ -1662,7 +1664,7 @@ App.vue 举例
 </template>
 ```
 
-#### 17.3 作用域插槽
+#### 4.3 作用域插槽
 
 将子组件中的数据传递给父组件的插槽来使用
 
@@ -1681,14 +1683,14 @@ App.vue 举例
 ![img](/images/blog/2022/5.jpg)
 ![img](/images/blog/2022/6.png)
 
-### 18 非父子组件的通信
+### 5 非父子组件的通信
 
 两种方式：
 
 - 全局事件总线
 - Provide/Inject
 
-#### 18.1 全局事件总线
+#### 5.1 全局事件总线
 
 Vue3 官方有推荐一些库，例如 mitt 或 tiny-emitter；
 主要讲解一下 hy-event-store 的使用 1.我们需要先安装这个库：
@@ -1745,7 +1747,7 @@ created() {
     }
 ```
 
-#### 18.2 Provide/Inject(在开发中用得非常少)
+#### 5.2 Provide/Inject(在开发中用得非常少)
 
 无论层级结构有多深，父组件都可以作为其所有子组件的依赖
 提供者；
@@ -1754,7 +1756,7 @@ created() {
 - 子组件有一个 inject 选项来开始使用这些数据；
   ![img](https://v3.cn.vuejs.org/images/components_provide.png)
 
-### 19.生命周期
+### 6.生命周期
 
 - 什么是生命周期？
   每个组件都可能会经历从创建、挂载、更新、卸载等一系列的过程
@@ -1832,7 +1834,7 @@ created() {
   </script>
   <style scoped></style>
   ```
-### 20 通过ref获取元素或组件
+### 7 通过ref获取元素或组件
 在Vue开发中我们是不推荐进行原生DOM操作的；这个时候，我们可以给元素或者组件绑定一个ref的attribute属性；
 `App.vue`
 ```html
@@ -1917,7 +1919,7 @@ created() {
 </style>
 
 ```
-### 21 动态组件的使用
+### 8 动态组件的使用
 比如我们现在想要实现了一个功能：
 - 点击一个tab-bar，切换不同的组件显示；
   
@@ -1994,6 +1996,6 @@ created() {
   }
 </style>
 ```
-### 22 keep-alive
+### 9 keep-alive
 在上一个案例中，默认情况下，我们在切换组件后，about组件会被销毁掉，再次回来时会重新创建组件；
 但是，在开发中某些情况我们希望继续保持组件的状态，而不是销毁掉，这个时候我们只需在外层包裹一个keep-alive组件即可
