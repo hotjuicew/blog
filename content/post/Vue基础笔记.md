@@ -1453,7 +1453,7 @@ App.vue 举例
 </div>
 ```
 
-### 3.2 子传父
+#### 3.2 子传父
 
 什么情况下子组件需要传递内容到父组件呢？
 
@@ -1999,3 +1999,251 @@ created() {
 ### 9 keep-alive
 在上一个案例中，默认情况下，我们在切换组件后，about组件会被销毁掉，再次回来时会重新创建组件；
 但是，在开发中某些情况我们希望继续保持组件的状态，而不是销毁掉，这个时候我们只需在外层包裹一个keep-alive组件即可
+
+keep-alive有一些属性：
+- include - string | RegExp | Array。只有名称匹配的组件会被缓存；
+- exclude - string | RegExp | Array。任何名称匹配的组件都不会被缓存；
+- max - number | string。最多可以缓存多少组件实例，一旦达到这个数
+字，那么缓存组件中最近没有被访问的实例会被销毁；
+include 和 exclude prop 允许组件有条件地缓存：
+- 二者都可以用逗号分隔字符串、正则表达式或一个数组来表示；
+- 匹配首先检查组件自身的 name 选项；
+  ```html
+  <template>
+    <div class="app">
+      <div class="tabs">
+        <template v-for="(item, index) in tabs" :key="item">
+          <button :class="{ active: currentTab === item }" 
+                  @click="itemClick(item)">
+            {{ item }}
+          </button>
+        </template>
+      </div>
+      <div class="view">
+        <!-- include: 组件的名称来自于组件定义时name选项  -->
+        <keep-alive include="home,about">
+          <component :is="currentTab"></component>
+        </keep-alive>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    import Home from './views/Home.vue'
+    import About from './views/About.vue'
+    import Category from './views/Category.vue'
+
+    export default {
+      components: {
+        Home,
+        About,
+        Category
+      },
+      data() {
+        return {
+          tabs: ["home", "about", "category"],
+          // currentIndex: 0
+          currentTab: "home"
+        }
+      },
+      methods: {
+        itemClick(tab) {
+          this.currentTab = tab
+        },
+        homeClick(payload) {
+          console.log("homeClick:", payload)
+        }
+      }
+    }
+  </script>
+
+  <style scoped>
+    .active {
+      color: red;
+    }
+  </style>
+  ```
+
+对于缓存的组件来说，再次进入时，我们是不会执行created或者mounted等生命周期函数的：
+ 但是有时候我们确实希望监听到何时重新进入到了组件，何时离开了组件；
+ 这个时候我们可以使用activated 和 deactivated 这两个生命周期钩子函数来监听；
+
+### 10 Webpack的代码分包
+#### 10.1 默认的打包过程：
+  默认情况下，在构建整个组件树的过程中，因为组件和组件之间是通过模块化直接依赖的，那么webpack在打包时就会将组件模块打包到一起（比如一个app.js文件中）；
+  这个时候随着项目的不断庞大，app.js文件的内容过大，会造成首屏的渲染速度变慢；
+![img](/images/blog/2022/打包文件夹分析和部署渲染过程.png)
+#### 10.2 打包时，代码的分包：
+  所以，对于一些不需要立即使用的组件，我们可以单独对它们进行拆分，拆分成一些小的代码块chunk.js；
+  这些chunk.js会在需要时从服务器加载下来，并且运行代码，显示对应的内容；
+##### 10.3.1 分包打包导入文件
+import函数来导入 是一种异步导入，可以让webpack对导入文件进行分包处理
+
+```js
+// import { sum } from './utils/math'
+import("./utils/math").then(res => {
+  res.sum(20, 30)
+})
+```
+##### 10.3.2 分包打包一个组件
+如果我们的项目过大了，对于某些组件我们希望通过异步的方式来进行加载（目的是可以对其进行分包处理），那么Vue中给我们提供了一个函数：defineAsyncComponent。
+defineAsyncComponent接受两种类型的参数：
+
+  ```js
+    import { defineAsyncComponent } from 'vue'
+
+    // import Category from './views/Category.vue'
+    const AsyncCategory = defineAsyncComponent(() => import("./views/Category.vue"))
+  ```
+ps.实际开发中异步组件用的不多，一般是用路由懒加载的方法
+
+### 11 组件的v-model
+前面我们在input中可以使用v-model来完成双向绑定.这个时候往往会非常方便，因为v-model默认帮助我们完成了两件事；v-bind:value的数据绑定和@input的事件监听；
+除此之外，vue也支持在组件上使用v-model；
+
+
+```html
+<my-input v-model="message"></my-input>
+//上下两行作用一致
+<my-input :modelValue="message" @update:modelValue="message = $event"></my-input>
+```
+为了我们的MyInput组件可以正常的工作，这个组件内的 `<input> `必须：
+- 将其 value attribute 绑定到一个名叫 modelValue 的 prop 上；
+- 在其 input 事件被触发时，将新的值通过自定义的 update:modelValue 事件抛出
+```html
+<template>
+  <div>
+    //默认名称就得是modelValue
+    <input :value="modelValue" @input="inputChange">
+  </div>
+</template>
+
+<script>
+  export default {
+    props: {
+      modelValue: {
+        type: Number,
+        default: 0
+      }
+    },
+    emits: ["update:modelValue"],
+    methods: {
+      changeCounter(event) {
+        this.$emit("update:modelValue", event.target.value)
+      } 
+    }
+  }
+</script>
+```
+如果不想要modelValue，想要自定义名称也是可以的
+```html
+<my-input v-model:counter="message"></my-input>
+//上下两行作用一致
+```
+```html
+<template>
+  <div>
+    <input :value="counter" @input="inputChange">
+  </div>
+</template>
+
+<script>
+  export default {
+    props: {
+      counter: {
+        type: Number,
+        default: 0
+      }
+    },
+    emits: ["update:counter"],
+    methods: {
+      changeCounter(event) {
+        this.$emit("update:counter", event.target.value)
+      } 
+    }
+  }
+</script>
+```
+#### 12 Mixin的基本使用（vue3不常用，建议用composition API 的方式）
+![mixin](/images/mixin.png)
+如果Mixin对象中的选项和组件对象中的选项发生了冲突，那么Vue会如何操作呢？
+- 情况一：如果是data函数的返回值对象
+返回值对象默认情况下会进行合并；如果data返回值对象的属性发生了冲突，那么会保留组件自身的数据；
+- 情况二：如何生命周期钩子函数
+生命周期的钩子函数会被合并到数组中，都会被调用；
+- 情况三：值为对象的选项，例如 methods、components 和 directives，将被合并为同一个对象。比如都有methods选项，并且都定义了方法，那么它们都会生效；但是如果对象的key相同，那么会取组件对象的键值对；
+
+## Composition API
+能将同一个逻辑关注点相关的代码收集在一起
+### 1.setup函数(setup中不能用this)
+#### 1.1参数
+它主要有两个参数：
+第一个参数：props
+第二个参数：context
+
+- props非常好理解，它其实就是父组件传递过来的属性会被放到props对象中，我们在setup中如果需要使用，那么就可以直接
+通过props参数获取：
+对于定义props的类型，我们还是和之前的规则是一样的，在props选项中定义；
+并且在template中依然是可以正常去使用props中的属性，比如message；
+如果我们在setup函数中想要使用props，那么不可以通过 this 去获取（后面我会讲到为什么）；
+因为props有直接作为参数传递到setup函数中，所以我们可以直接通过参数来使用即可；
+- 另外一个参数是context，我们也称之为是一个SetupContext，它里面包含三个属性：
+attrs：所有的非prop的attribute；
+slots：父组件传递过来的插槽（这个在以渲染函数返回时会有作用，后面会讲到）；
+emit：当我们组件内部需要发出事件时会用到emit（因为我们不能访问this，所以不可以通过 this.$emit发出事件）；
+`App.vue`
+```vue
+<template>
+  <div class="app">
+    <!-- template中ref对象自动解包 -->
+    <h2>当前计数: {{ counter }}</h2>
+    <button @click="increment">+1</button>
+    <button @click="decrement">-1</button>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue'
+import useCounter from './hooks/useCounter'
+
+export default {
+  setup() {
+    // 1.定义counter的内容
+    // 默认定义的数据都不是响应式数据
+    // let counter = ref(100)
+    // const increment = () => {
+    //   counter.value++
+    //   console.log(counter.value)
+    // }
+    // const decrement = () => {
+    //   counter.value--
+    // }
+    // const { counter, increment, decrement } = useCounter()
+
+    return {
+      ...useCounter()
+    }
+  }
+}
+</script>
+
+<style>
+</style>
+```
+`useCounter.js`
+```js
+import { ref } from 'vue'
+
+export default function useCounter() {
+  let counter = ref(100)
+  const increment = () => {
+    counter.value++
+    console.log(counter.value)
+  }
+  const decrement = () => {
+    counter.value--
+  }
+
+  return { counter, increment, decrement }
+}
+```
