@@ -1820,7 +1820,7 @@ created() {
       updated() {
         console.log("updated");
       },
-
+  
       // 6.卸载VNode -> DOM元素
       // 6.1.卸载之前
       beforeUnmount() {
@@ -1923,6 +1923,7 @@ created() {
 比如我们现在想要实现了一个功能：
 - 点击一个tab-bar，切换不同的组件显示；
   
+
 这个案例我们可以通过两种不同的实现思路来实现：
 - 方式一：通过v-if来判断，显示不同的组件；
 - 方式二：动态组件 component 的方式；
@@ -2027,12 +2028,12 @@ include 和 exclude prop 允许组件有条件地缓存：
       </div>
     </div>
   </template>
-
+  
   <script>
     import Home from './views/Home.vue'
     import About from './views/About.vue'
     import Category from './views/Category.vue'
-
+  
     export default {
       components: {
         Home,
@@ -2056,7 +2057,7 @@ include 和 exclude prop 允许组件有条件地缓存：
       }
     }
   </script>
-
+  
   <style scoped>
     .active {
       color: red;
@@ -2175,6 +2176,24 @@ ps.实际开发中异步组件用的不多，一般是用路由懒加载的方�
 
 ## Composition API
 能将同一个逻辑关注点相关的代码收集在一起
+
+**什么是Composition API？和之前的options API有什么区别？（面试）**
+
+* Composition API:   组件根据逻辑功能来组织的，一个功能所定义的所有 API 会放在一起（更加的高内聚，低耦合）
+
+* Options API: 在对应的属性中编写对应的功能模块,  比如data定义数据、methods中定义方法、computed中定义计算属性、watch中监听属性改变，也包括生命周期钩子
+  * 弊端:  当我们实现某一个功能时，这个功能对应的代码逻辑会被拆分到各个属性中,当组件变得复杂，导致对应属性的列表也会增长，这可能会导致组件难以阅读和理解
+* 两者区别
+
+```
+1)在逻辑组织和逻辑复用方面，Composition API是优于Options API
+2) 因为Composition API几乎是函数，会有更好的类型推断。
+3) Composition API对 tree-shaking 友好，代码也更容易压缩
+4) Composition API中见不到this的使用，减少了this指向不明的情况
+```
+
+
+
 ### 1.setup函数(setup中不能用this)
 #### 1.1参数
 它主要有两个参数：
