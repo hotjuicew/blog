@@ -1695,3 +1695,643 @@ admin
 editor
 subscriber
 ```
+
+## Proxy & Reflection
+
+### Proxy
+
+Proxy 是 ES6中新增的功能，可以用来自定义对象中的操作，设计思想主要是基于设计模式中的代理模式，其原理图大致如下。
+![img](https://img-blog.csdnimg.cn/20200826154036290.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxOTk2NDU0,size_16,color_FFFFFF,t_70#pic_center)
+每次获取proxy，这个proxy就会返回对data的深拷贝，而要对data中的属性进行增删查等操作，也是直接对proxy下手就行。通过对整个对象的代理，就避免了访问之前要明确data中有什么属性的这一个过程。这样就实现了一个解耦合的过程，避免了直接操作data对象。
+
+要创建新的Proxy Object，请使用以下语法：
+
+```js
+let proxy = new Proxy(target, handler);
+```
+
+在这种语法中：
+
+- `target`– 是需要侦听的对象。
+- `handler`– 是处理对象。is an object that contains methods to control the behaviors of the `target`. The methods inside the `handler` object are called traps.
+
+基本的使用示例如下。
+
+```js
+let p = new Proxy(target, handler);
+// `target` 代表需要添加代理的对象
+// `handler` 用来自定义对象中的操作
+
+let person01 = {
+    name: "",
+    testObj: {
+        key1: "1",
+        key2: "2",
+        key3: "3",
+    }
+};
+
+// 设置了一个person01的代理
+let personProxy01 = new Proxy(person01, {
+    get(target,key){
+        // console.log('get方法被拦截。 实现原理为通过属性的getter驱动函数调用该方法');
+        return target[key];
+    },
+    set(target,key,value){
+        // console.log('set方法被拦截。实现原理为通过属性的setter驱动函数调用该方法');
+        target[key]=value;
+    }
+})
+```
+
+proxy中的handler主要存放的是一些代理钩子函数，通过这些函数我们可以自定义一些数据劫持的方式，以此可以实现一个更优秀的订阅发布模式。
+
+在对象的操作方法里面，建议使用ES6新增的Reflect,而Reflect里定义了对象操作的方法，利用Reflect可以方便地对被代理对象的操作。
+
+#### Proxy Traps 捕获器
+
+| 代理陷阱        | 覆写的特性                | 默认特性                   |
+| --------------- | ------------------------- | -------------------------- |
+| get             | 读取一个属性值            | Reflect.get()              |
+| set             | 写入一个属性              | Reflect.set()              |
+| has             | in操作                    | Reflect.has()              |
+| deleteProperty  | delete操作符              | Reflect.deleteProperty()   |
+| getAPrototypeof | Object.getAPrototypeof () | Reflect.getAPrototypeof () |
+| setAPrototypeof | Object.setAPrototypeof () | Reflect.setAPrototypeof () |
+| apply           | 调用一个函数              | Reflect.apply()            |
+| construct       | 用new调用一个函数         | Reflect.construct()        |
+
+
+```js
+const obj = {
+  name: "why", // 数据属性描述符
+  age: 18
+}
+
+// 变成一个访问属性描述符
+// Object.defineProperty(obj, "name", {
+
+// })
+
+const objProxy = new Proxy(obj, {
+  // 获取值时的捕获器set()
+  get: function(target, key) {
+    console.log(`监听到对象的${key}属性被访问了`, target)
+    return target[key]
+  },
+
+  // 设置值时的捕获器get()
+  set: function(target, key, newValue) {
+    console.log(`监听到对象的${key}属性被设置值`, target)
+    target[key] = newValue
+  },
+
+  // 监听in的捕获器has()
+  has: function(target, key) {
+    console.log(`监听到对象的${key}属性in操作`, target)
+    return key in target
+  },
+
+  // 监听delete的捕获器
+  deleteProperty: function(target, key) {
+    console.log(`监听到对象的${key}属性in操作`, target)
+    delete target[key]
+  }
+})
+
+
+// in操作符
+// console.log("name" in objProxy)
+
+// delete操作
+delete objProxy.name
+
+```
+
+##### 1.get（）
+
+get方法用于拦截某个属性的读取操作，可以接受三个参数
+
+target：目标对象
+propKey：属性名
+receiver（可选）：proxy 实例本身（严格地说，是操作行为所针对的对象）
+
+```js
+var person = {
+  name: "张三"
+};
+
+var proxy = new Proxy(person, {
+  get: function(target, property) {
+    if (property in target) {
+      return target[property];
+    } else {
+      throw new ReferenceError("Property \"" + property + "\" does not exist.");
+    }
+  }
+});
+
+proxy.name // "张三"
+proxy.age // 抛出一个错误
+```
+
+
+上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回undefined。
+
+get方法可以继承。
+
+```js
+let proto = new Proxy({}, {
+  get(target, propertyKey, receiver) {
+    console.log('GET ' + propertyKey);
+    return target[propertyKey];
+  }
+});
+
+let obj = Object.create(proto);
+obj.foo // "GET foo"
+```
+
+上面代码中，拦截操作定义在Prototype对象上面，所以如果读取obj对象继承的属性时，拦截会生效。
+
+##### 2.set()
+
+set方法用来拦截某个属性的赋值操作
+
+target：目标对象
+propKey：属性名
+propValue：属性值
+receiver（可选）：proxy 实例本身（原始的操作行为所在的那个对象，简单来说，如果要调用一个属性，谁调用了那个属性，receiver就是谁）
+
+```js
+let validator = {
+  set: function(obj, prop, value) {
+    if (prop === 'age') {
+      if (!Number.isInteger(value)) {
+        throw new TypeError('The age is not an integer');
+      }
+      if (value > 200) {
+        throw new RangeError('The age seems invalid');
+      }
+    }
+    // 对于满足条件的 age 属性以及其他属性，直接保存
+    obj[prop] = value;
+  }
+};
+
+let person = new Proxy({}, validator);
+
+person.age = 100;
+
+person.age // 100
+person.age = 'young' // 报错
+person.age = 300 // 报错
+```
+
+上述代码中的Number.isInteger()方法用来判断给定的参数是否为整数。返回布尔值
+
+上面代码中，由于设置了存值函数set，任何不符合要求的age属性赋值，都会抛出一个错误，这是数据验证的一种实现方法。利用set方法，还可以数据绑定，即每当对象发生变化时，会自动更新 DOM。
+
+```js
+const handler = {
+  set: function(obj, prop, value, receiver) {
+    obj[prop] = receiver;
+  }
+};
+const proxy = new Proxy({}, handler);
+const myObj = {};
+Object.setPrototypeOf(myObj, proxy);
+
+myObj.foo = 'bar';
+myObj.foo === myObj // true
+```
+
+上面代码中，设置myObj.foo属性的值时，myObj并没有foo属性，因此引擎会到myObj的原型链去找foo属性。myObj的原型对象proxy是一个 Proxy 实例，设置它的foo属性会触发set方法。这时，第四个参数receiver就指向原始赋值行为所在的对象myObj。
+
+注意，如果目标对象自身的某个属性，不可写且不可配置，那么set方法将不起作用。
+
+```js
+const obj = {};
+Object.defineProperty(obj, 'foo', {
+  value: 'bar',
+  writable: false,
+});
+
+const handler = {
+  set: function(obj, prop, value, receiver) {
+    obj[prop] = 'baz';
+  }
+};
+
+const proxy = new Proxy(obj, handler);
+proxy.foo = 'baz';
+proxy.foo // "bar"
+```
+
+
+Object.defineProperty(obj, prop, descriptor)
+obj：要在其上定义属性的对象。
+prop：要定义或修改的属性的名称。
+descriptor：定义或修改的属性描述符（属性的描述对象）。
+
+注意，严格模式下，set代理如果没有返回true，就会报错。
+
+##### 3.apply()
+
+apply方法拦截函数的调用、call和apply操作。可以接受三个参数
+
+target：目标对象
+thisArg：目标对象的上下文对象（this）
+args：目标对象的参数数组。
+
+```js
+var target = function () { return 'I am the target'; };
+var handler = {
+  apply: function () {
+    return 'I am the proxy';
+  }
+};
+var p = new Proxy(target, handler);
+console.log(p())//I am the proxy
+```
+
+上述代码，执行 p() 时被apply拦截操作后输出 I am the proxy 。若 handler 中为一个空对象，执行 p() 则直接指向target目标函数执行，输出 I am the target
+
+4.has()
+has 方法用来拦截HasProperty操作，即判断对象是否具有某个属性时，这个方法会生效。 典型的操作就是in运算符。
+
+has 方法可以接受两个参数
+
+target：目标对象
+Key：需查询的属性名。
+下面的例子使用has方法隐藏某些属性，不被in运算符发现。
+
+```js
+var handler = {
+  has (target, key) {
+    if (key[0] === '_') {
+      return false;
+    }
+    return key in target;
+  }
+};
+var target = { _prop: 'foo', prop: 'foo' };
+var proxy = new Proxy(target, handler);
+'_prop' in proxy // false
+```
+
+
+
+> in 运算符 （key in obj） ：监测 obj 中是否有指定的key(键名)，返回一个布尔值
+
+上面代码中，如果原对象的属性名的第一个字符是下划线，proxy.has就会返回false，从而不会被in运算符发现。
+
+如果原对象不可配置或者禁止扩展，这时has拦截会报错。
+
+```js
+var obj = { a: 10 };
+Object.preventExtensions(obj);
+
+var p = new Proxy(obj, {
+  has: function(target, prop) {
+    return false;
+  }
+});
+
+'a' in p // TypeError is thrown
+```
+
+
+
+> Object.preventExtensions（obj）方法防止将新属性添加到 obj（即，防止将来对该 obj 进行扩展）。
+
+注意：
+
+has 方法拦截的是HasProperty操作，而不是HasOwnProperty操作，即 has 方法不判断一个属性是对象自身的属性，还是继承的属性。
+另外，虽然for...in 循环也用到了in运算符，但是 has 拦截对for...in循环不生效。
+
+##### 5.construct()
+
+construct方法用于拦截new命令,接受两个参数。
+
+```js
+target：目标对象
+args：构造函数的参数对象
+newTarget：创造实例对象时，new命令作用的构造函数（下面例子的p）
+var p = new Proxy(function () {}, {
+  construct: function(target, args) {
+    console.log('called: ' + args.join(', '));
+    return { value: args[0] * 10 };
+  }
+});
+
+(new p(1)).value
+// "called: 1"
+// 10
+```
+
+
+注意：construct方法返回的必须是一个对象，否则会报错。
+
+##### 6.deleteProperty()
+
+deleteProperty方法用于拦截 delete 操作，如果使用这个方法，当前属性就无法被delete 命令删除。
+接收两个参数，返回一个 Boolean 类型的值
+
+target：目标对象。
+prop：待删除的属性名。
+
+```js
+var p = new Proxy({a:1}, {
+  deleteProperty: function(target, prop) {
+    console.log('called: ' + prop);
+    return true;
+  }
+});
+
+delete p.a; //called: a
+console.log(p)//Proxy {a: 1}
+```
+
+上面代码中，deleteProperty方法拦截了delete操作符
+注意：
+
+目标对象自身的不可配置（configurable）的属性，不能被deleteProperty方法删除，否则报错。
+
+##### 7.defineProperty()
+
+用于拦截对对象的 Object.defineProperty() 操作。简单来说，就是向对象添加和修改属性时会触发拦截
+下列参数将会被传递给 defineProperty 方法。 this 绑定在 handler 对象上。
+
+target：目标对象。
+property：待检索其描述的属性名。
+descriptor：待定义或修改的属性的描述符。
+
+```js
+var handler = {
+  defineProperty (target, key, descriptor) {
+    return false;
+  }
+};
+var target = {};
+var proxy = new Proxy(target, handler);
+proxy.foo = 'bar' // 不会生效
+```
+
+上面代码中，defineProperty 方法返回 false，导致添加新属性总是无效。
+注意：
+
+如果目标对象不可扩展（non-extensible），则defineProperty不能增加目标对象上不存在的属性，否则会报错。
+默认情况下，对象是可扩展的，
+使用Object.preventExtensions，Object.seal 或 Object.freeze 方法都可以标记一个对象为不可扩展（non-extensible）。
+
+另外，如果目标对象的某个属性不可写（writable）或不可配置（configurable），则defineProperty方法不得改变这两个设置。
+
+##### 8.getOwnPropertyDescriptor()
+
+getOwnPropertyDescriptor方法拦截Object.getOwnPropertyDescriptor()，返回一个属性描述对象或者undefined。
+有两个参数
+
+target：目标对象。
+prop：应检索其描述的属性名称。
+
+```js
+var handler = {
+  getOwnPropertyDescriptor (target, key) {
+    if (key[0] === '_') {
+      return;
+    }
+    return Object.getOwnPropertyDescriptor(target, key);
+  }
+};
+var target = { _foo: 'bar', baz: 'tar' };
+var proxy = new Proxy(target, handler);
+Object.getOwnPropertyDescriptor(proxy, 'wat')
+// undefined
+Object.getOwnPropertyDescriptor(proxy, '_foo')
+// undefined
+Object.getOwnPropertyDescriptor(proxy, 'baz')
+// { value: 'tar', writable: true, enumerable: true, configurable: true }
+```
+
+上面代码中，handler.getOwnPropertyDescriptor方法对于第一个字符为下划线的属性名会返回undefined。
+
+Object.getOwnPropertyDescriptor() 方法返回指定对象上一个自有属性对应的描述对象
+obj：需要查找的目标对象
+prop：目标对象内属性名称
+若指定的属性不存在于对象，则返回 undefined。
+
+##### 9.getPrototypeOf()
+
+当 getPrototypeOf 方法被调用时，this 指向的是它所属的处理器对象。
+只有一个参数
+
+target ：被代理的目标对象
+getPrototypeOf方法主要用来拦截获取对象原型。具体来说，拦截下面这些操作。
+
+```js
+Object.prototype.__proto__
+Object.prototype.isPrototypeOf()
+Object.getPrototypeOf()
+Reflect.getPrototypeOf()
+instanceof
+var proto = {};
+var p = new Proxy({}, {
+  getPrototypeOf(target) {
+    return proto;
+  }
+});
+Object.getPrototypeOf(p) === proto // true
+```
+
+上面代码中，getPrototypeOf 方法拦截 Object.getPrototypeOf()，返回proto对象。
+
+注意：
+
+getPrototypeOf 方法的返回值必须是一个对象或者 null。
+另外，如果目标对象不可扩展（non-extensible）， getPrototypeOf方法必须返回目标对象的原型对象。
+
+##### 10.isExtensible()
+
+isExtensible方法拦截Object.isExtensible操作。 只有一个参数
+
+target：目标对象
+注意：该方法只能返回布尔值，否则返回值会被自动转为布尔值。
+
+这个方法有一个强限制，它的返回值必须与目标对象的isExtensible属性保持一致，否则就会抛出错误。
+
+```js
+Object.isExtensible(proxy) === Object.isExtensible(target)
+
+var p = new Proxy({}, {
+  isExtensible: function(target) {
+    return false;
+  }
+});
+
+Object.isExtensible(p)
+// Uncaught TypeError: 'isExtensible' on proxy: trap result does not reflect extensibility of proxy target (which is 'true')
+```
+
+> Object.isExtensible() 方法判断一个对象是否是可扩展的（是否可以在它上面添加新的属性）。返回布尔值
+> 参数
+> obj：需要检测的对象
+
+##### 11.ownKeys()
+
+ownKeys方法用来拦截对象自身属性的读取操作。具体来说，拦截以下操作。
+
+```
+Object.getOwnPropertyNames()
+Object.getOwnPropertySymbols()
+Object.keys()
+for...in循环
+```
+
+参数：target：目标对象
+
+##### 12.preventExtensions()
+
+preventExtensions方法拦截Object.preventExtensions()。该方法必须返回一个布尔值，否则会被自动转为布尔值。
+这个方法有一个限制，只有目标对象不可扩展时（即Object.isExtensible(proxy)为false），proxy.preventExtensions才能返回true，否则会报错。
+
+```js
+var proxy = new Proxy({}, {
+  preventExtensions: function(target) {
+    return true;
+  }
+});
+
+Object.preventExtensions(proxy)
+// Uncaught TypeError: 'preventExtensions' on proxy: trap returned truish but the proxy target is extensible
+```
+
+为了防止出现这个问题，通常要在proxy.preventExtensions方法里面，调用一次Object.preventExtensions。
+
+```js
+var proxy = new Proxy({}, {
+  preventExtensions: function(target) {
+    console.log('called');
+    Object.preventExtensions(target);
+    return true;
+  }
+});
+
+Object.preventExtensions(proxy)
+// "called"
+// Proxy {}
+```
+
+>  Object.preventExtensions( obj ) 方法让一个对象变的不可扩展，也就是永远不能再添加新的属性。
+
+##### 13.setPrototypeOf()
+
+setPrototypeOf方法主要用来拦截Object.setPrototypeOf方法。
+
+```js
+var handler = {
+  setPrototypeOf (target, proto) {
+    throw new Error('Changing the prototype is forbidden');
+  }
+};
+var proto = {};
+var target = function () {};
+var proxy = new Proxy(target, handler);
+Object.setPrototypeOf(proxy, proto);
+// Error: Changing the prototype is forbidden
+```
+
+注意：
+
+该方法只能返回布尔值，否则会被自动转为布尔值。
+另外，如果目标对象不可扩展（non-extensible），setPrototypeOf方法不得改变目标对象的原型。
+Object.setPrototypeOf( obj，prototype ) 方法设置一个指定的对象的原型 ( 即, 内部[[Prototype]]属性）到另一个对象或 null。两个参数
+obj：要设置其原型的对象。.
+prototype：该对象的新原型(一个对象 或 null).
+Object.setPrototypeOf()是ECMAScript 6最新草案中的方法，相对于 Object.prototype.__proto__ ，它被认为是修改对象原型更合适的方法
+
+### Reflect
+
+[reflect的使用](https://blog.csdn.net/qq_45677671/article/details/122714476)
+
+Reflect也是ES6新增的一个API，它是一个对象，字面的意思是反射。 n那么这个Reflect有什么用呢？ 它主要提供了很多操作JavaScript对象的方法，有点像Object中操作对象的方法； 
+比如Reflect.getPrototypeOf(target)类似于 Object.getPrototypeOf()；  
+比如Reflect.defineProperty(target, propertyKey, attributes)类似于Object.defineProperty() ；
+
+设计目的
+1.将Object对象的一些明显属于语言内部的方法（比如Object.defineProperty），放到Reflect对象上。
+现阶段，某些方法同时在Object和Reflect对象上部署，未来的新方法将只部署在Reflect对象上。
+也就是说，从Reflect对象上可以拿到语言内部的方法。
+2.修改某些Object方法的返回结果，让其变得更合理。
+
+```js
+// 老写法
+try {
+  // 定义一个数据，在无法定义属性时，会抛出一个错误
+  Object.defineProperty(target, property, attributes);
+  // success
+} catch (e) {
+  // failure
+}
+
+// 新写法
+if (Reflect.defineProperty(target, property, attributes)) {	// 而Reflect则会返回false
+  // success
+} else {
+  // failure
+}
+
+```
+
+3.让Object操作都变成函数行为。
+
+```js
+// 老写法
+// 判断assign属性是否在Object 对象中
+'assign' in Object // true
+
+// 新写法
+Reflect.has(Object, 'assign') // true
+
+```
+
+4.Reflect对象的方法与Proxy对象的方法一一对应，只要是Proxy对象的方法，就能在Reflect对象上找到对应的方法。
+这就让Proxy对象可以方便地调用对应的Reflect方法，完成默认行为，作为修改行为的基础。
+也就是说，不管Proxy怎么修改默认行为，你总可以在Reflect上获取默认行为。
+
+```js
+// Proxy方法拦截target对象的属性赋值行为。
+Proxy(target, {
+  set: function(target, name, value, receiver) {
+    // 它采用Reflect.set方法将值赋值给对象的属性，确保完成原有的行为，然后再部署额外的功能。
+    var success = Reflect.set(target, name, value, receiver);
+    if (success) {
+      console.log('property ' + name + ' on ' + target + ' set to ' + value);
+    }
+    return success;
+  }
+});
+
+```
+
+```js
+// 每一个Proxy对象的拦截操作（get、delete、has）
+// 内部都调用对应的Reflect方法，保证原生行为能够正常执行。
+// 添加的工作，就是将每一个操作输出一行日志。
+var loggedObj = new Proxy(obj, {
+  get(target, name) {
+    console.log('get', target, name);
+    return Reflect.get(target, name);
+  },
+  deleteProperty(target, name) {
+    console.log('delete' + name);
+    return Reflect.deleteProperty(target, name);
+  },
+  has(target, name) {
+    console.log('has' + name);
+    return Reflect.has(target, name);
+  }
+});
+
+```
+

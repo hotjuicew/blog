@@ -1951,7 +1951,7 @@ created() {
       </template> -->
 
       <!-- 2.第二种做法: 动态组件 component -->
-      <!-- is中的组件需要来自两个地方: 1.全局注册的组件 2.局部注册的组件 -->
+      <!-- is中的组件需要来自两个地方: 1.全局注册的组件 2.局部注册的组件（components对象中注册过的组件） -->
       <!-- <component :is="tabs[currentIndex]"></component> -->
       <component name="why" 
                  :age="18"
@@ -2266,3 +2266,585 @@ export default function useCounter() {
   return { counter, increment, decrement }
 }
 ```
+
+### 2 Reactive和Ref（一般使用Ref）
+
+为在setup中定义的数据提供响应式的特性
+
+`App.vue`
+
+```vue
+<template>
+  <div>
+    <h2>message: {{ message }}</h2>
+    <button @click="changeMessage">修改message</button>
+    <hr>
+    <h2>账号: {{ account.username }}</h2>
+    <h2>密码: {{ account.password }}</h2>
+    <button @click="changeAccount">修改账号</button>
+    <hr>
+    <!-- 默认情况下在template中使用ref时, vue会自动对其进行解包(取出其中value) -->
+    <h2>当前计数: {{ counter }}</h2>
+    <button @click="increment">+1</button>
+    <button @click="counter++">+1</button>
+
+    <hr>
+    <!-- 使用的时候不需要写.value -->
+    <h2>当前计数: {{ info.counter }}</h2>
+    <!-- 修改的时候需要写.value -->
+    <button @click="info.counter.value++">+1</button>
+  </div>
+</template>
+
+<script>
+  import { reactive, ref } from 'vue'
+
+  export default {
+    setup() {
+      // 1.定义普通的数据: 可以正常的被使用
+      // 缺点: 数据不是响应式的
+      let message = "Hello World"
+      function changeMessage() {
+        message = "你好啊,李银河!"
+        console.log(message)
+      }
+
+      // 2.定义响应式数据
+      // 2.1.reactive函数: 定义复杂类型的数据，不能传入普通类型 （开发中用得不算多）
+      const account = reactive({
+        username: "coderwhy",
+        password: "123456"
+      })
+      function changeAccount() {
+        account.username = "kobe"
+      }
+
+      // 2.2.ref函数: 定义简单类型的数据(也可以定义复杂类型的数据)
+      // counter定义响应式数据
+      const counter = ref(0)
+      function increment() {
+        counter.value++
+      }
+
+      // 3.ref是浅层解包
+      const info = {
+        counter
+      }
+
+      return {//对数据和方法进行返回，template中就能够进行绑定了
+        message,
+        changeMessage,
+        account,
+        changeAccount,
+        counter,
+        increment,
+        info
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+`App2.vue`
+
+```vue
+<template>
+  <div>
+    <form>
+      账号: <input type="text" v-model="account.username">
+      密码: <input type="password" v-model="account.password">
+    </form>
+    
+    <form>
+      账号: <input type="text" v-model="username">
+      密码: <input type="password" v-model="password">
+    </form>
+
+    <hr>
+
+    <show-info :name="name" :age="age"></show-info>
+  </div>
+</template>
+
+<script>
+  import { onMounted, reactive, ref } from 'vue'
+  import ShowInfo from './ShowInfo.vue'
+
+  export default {
+    components: {
+      ShowInfo
+    },
+    data() {
+      return {
+        message: "Hello World"
+      }
+    },
+    setup() {
+      // 定义响应式数据: reactive/ref
+      // 强调: ref也可以定义复杂的数据
+      const info = ref({})
+      console.log(info.value)
+
+      // 1.reactive的应用场景
+      // 1.1.条件一: reactive应用于本地的数据
+      // 1.2.条件二: 多个数据之间是有关系/联系(聚合的数据, 组织在一起会有特定的作用)
+      const account = reactive({
+        username: "coderwhy",
+        password: "1234567"
+      })
+
+      const username = ref("coderwhy")
+      const password = ref("123456")
+
+      // 2.ref的应用场景: 其他的场景基本都用ref(computed)
+      // 2.1.定义本地的一些简单数据
+      const message = ref("Hello World")
+      const counter = ref(0)
+      const name = ref("why")
+      const age = ref(18)
+
+      // 2.定义从网络中获取的数据也是使用ref
+      // const musics = reactive([])
+      const musics = ref([])
+      onMounted(() => {
+        const serverMusics = ["海阔天空", "小苹果", "野狼"]
+        musics.value = serverMusics
+      })
+
+
+      return {
+        account,
+        username,
+        password,
+        name,
+        age
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+
+```
+
+### 3 任何组件都应该像纯函数一样，不应该修改传入的props
+
+单向数据流的概念：子组件拿到数据后只能使用，不能修改。如果确实要修改，那么应该将事件传递出去，由父组件来修改数据
+`ShowInfo.vue`
+
+```vue
+<template>
+  <div>
+    <h2>ShowInfo: {{ info }}</h2>
+    <!-- 代码没有错误, 但是违背规范(单项数据流) -->
+    <button @click="info.name = 'kobe'">ShowInfo按钮</button>
+    <!-- 正确的做法: 符合单项数据流-->
+    <button @click="showInfobtnClick">ShowInfo按钮</button>
+    <hr>
+    <!-- 使用readonly的数据 -->
+    <h2>ShowInfo: {{ roInfo }}</h2>
+    <!-- 代码就会无效(报警告) -->
+    <!-- <button @click="roInfo.name = 'james'">ShowInfo按钮</button> -->
+    <!-- 正确的做法 -->
+    <button @click="roInfoBtnClick">roInfo按钮</button>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: {
+      // reactive数据
+      info: {
+        type: Object,
+        default: () => ({})
+      },
+      // readonly数据
+      roInfo: {
+        type: Object,
+        default: () => ({})
+      }
+    },
+    emits: ["changeInfoName", "changeRoInfoName"],
+    setup(props, context) {
+      function showInfobtnClick() {
+        context.emit("changeInfoName", "kobe")
+      }
+
+      function roInfoBtnClick() {
+        context.emit("changeRoInfoName", "james")
+      }
+
+      return {
+        showInfobtnClick,
+        roInfoBtnClick
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+`App.vue`
+
+```vue
+<template>
+  <h2>App: {{ info }}</h2>
+  <show-info :info="info" 
+             :roInfo="roInfo" 
+             @changeInfoName="changeInfoName"
+             @changeRoInfoName="changeRoInfoName">
+  </show-info>
+</template>
+
+<script>
+  import { reactive, readonly } from 'vue'
+  import ShowInfo from './ShowInfo.vue'
+
+  export default {
+    components: {
+      ShowInfo
+    },
+    setup() {
+      // 本地定义多个数据, 都需要传递给子组件
+      // name/age/height
+      const info = reactive({
+        name: "why",
+        age: 18,
+        height: 1.88
+      })
+
+      function changeInfoName(payload) {
+        info.name = payload
+      }
+
+      // 使用readOnly包裹info
+      const roInfo = readonly(info)
+      function changeRoInfoName(payload) {
+        info.name = payload
+      }
+
+      return {
+        info,
+        changeInfoName,
+        roInfo,
+        changeRoInfoName
+      }
+    }
+  }
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+### 4 readonly()
+
+Vue3为我们提供了readonly的方法； readonly会返回原始对象的只读代理（也就是它依然是一个Proxy，这是一个proxy的set方法被劫持，并且不能对其进行修 改）；
+
+由于上一个要点，如果你担心别人会把你传进组件的数据直接改掉，可以用readonly对数据进行包裹之后再传进去。
+
+### 5 其他函数
+- isProxy
+  检查对象是否是由 reactive 或 readonly创建的 proxy。
+- isReactive
+  检查对象是否是由 reactive创建的响应式代理：
+  如果该代理是 readonly 建的，但包裹了由 reactive 创建的另一个代理，它也会返回 true；
+- isReadonly
+  检查对象是否是由 readonly 创建的只读代理。
+- toRaw
+  返回 reactive 或 readonly 代理的原始对象（不建议保留对原始对象的持久引用。请谨慎使用）。
+- shallowReactive
+  创建一个响应式代理，它跟踪其自身 property 的响应性，但不执行嵌套对象的深层响应式转换 (深层还是原生对象)。
+- shallowReadonly
+  创建一个 proxy，使其自身的 property 为只读，但不执行嵌套对象的深度只读转换（深层还是可读、可写的）。
+- unref
+ 如果我们想要获取一个ref引用中的value，那么也可以通过unref方法：
+   - 如果参数是一个 ref，则返回内部值，否则返回参数本身；
+   - 这是 val = isRef(val) ? val.value : val 的语法糖函数；
+- isRef
+  
+   判断值是否是一个ref对象。
+- shallowRef
+  
+   创建一个浅层的ref对象；
+- triggerRef
+手动触发和 shallowRef 相关联的副作用：
+
+### 6 toRefs()
+如果我们使用ES6的解构语法，对reactive返回的对象进行解构获取值，那么之后无论是修改结构后的变量，还是修改reactive,返回的state对象，数据都不再是响应式的：
+那么有没有办法让我们解构出来的属性是响应式的呢？
+
+- Vue为我们提供了一个toRefs的函数，可以将reactive返回的对象中的属性都转成ref；
+- 那么我们再次进行结构出来的 name 和 age 本身都是 ref的；
+- 这种做法相当于已经在state.name和ref.value之间建立了 链接，任何一个修改都会引起另外一个变化；
+
+```js
+<script>
+  import { reactive, toRefs, toRef } from 'vue'
+  
+  export default {
+    setup() {
+
+        const info = reactive({
+          name: "why",
+          age: 18,
+          height: 1.88
+        })
+
+        // reactive被解构后会变成普通的值, 失去响应式
+        // 当我们这样做的时候，会返回两个ref对象，它们是响应式的
+        const { name, age } = toRefs(info)
+        // 如果我们只希望转换一个reactive对象中的属性为ref, 那么可以使用toRef的方法
+        const height = toRef(info, "height")
+
+        return {
+          name,
+          age,
+          height
+        }
+
+    }
+  }
+
+</script>
+```
+
+### 7 setup里面不可以使用this
+
+在setup被调用之前，data，methods,computed等都没有被解析 ，this未指向当前的组件实例
+
+### 8 setup中computed方法
+computed返回的是一个ref对象
+如何使用computed呢？
+- 方式一：接收一个getter函数，并为 getter 函数返回的值，返回一个不变的 ref 对象；
+- 方式二：接收一个具有 get 和 set 的对象，返回一个可变的（可读写）ref 对象；
+
+
+```js
+const fullname = computed(() => {
+        return names.firstName + " " + names.lastName
+      })
+```
+```js
+const fullname = computed({
+        set: function(newValue) {
+          const tempNames = newValue.split(" ")
+          names.firstName = tempNames[0]
+          names.lastName = tempNames[1]
+        },
+        get: function() {
+          return names.firstName + " " + names.lastName
+        }
+      })
+```
+
+### 9 Setup中ref引入元素
+
+![img](/images/blog/2022/8.png)
+在使用vue2的时候，我们需要获取dom元素，或者获取组件的相关方法属性，一般都是通过this.$refs[domName]的方式，但是在vue3的setup中是没有this的,那么如何获取$refs呢？
+
+**借助 ref() 函数**
+首先在setup中定义一个ref的变量，然后将该变量挂载到DOM上。
+
+```vue
+<script setup>
+import {ref,onMounted} from 'vue'
+let divRef = ref(null);//refs
+onMounted(() => {
+	console.log(divRef.value)
+})
+</script>
+<template>
+  <div class="home">
+	<div ref="divRef">元素</div>
+  </div>
+</template>
+```
+
+ref将setup函数声明的变量变为响应式，包含且仅有一个value属性。
+
+需要注意的是，调用divRef.value是需要在dom渲染后才能获取到，一般在回调的onMounted的方法中访问，在别的地方可以通过nextTick来实现访问，下面简单介绍下nextTick。
+
+nextTick下调用$refs
+nextTick将回调推迟到下一个DOM更新周期之后执行。在更改了一些数据以等待DOM更新后立即使用它。
+
+```vue
+<script setup>
+import { ref, nextTick } from 'vue'
+let divRef = ref(null);//refs
+const init = async ()=> {
+	await nextTick()
+	console.log(divRef.value)
+}
+</script>
+```
+
+### 10 setup中的生命周期钩子
+
+你可以通过在生命周期钩子前面加上 “on” 来访问组件的生命周期钩子。
+
+下表包含如何在 setup ()内部调用生命周期钩子：
+
+| 选项式 API        | Hook inside `setup` |
+| ----------------- | ------------------- |
+| `beforeCreate`    | Not needed*         |
+| `created`         | Not needed*         |
+| `beforeMount`     | `onBeforeMount`     |
+| `mounted`         | `onMounted`         |
+| `beforeUpdate`    | `onBeforeUpdate`    |
+| `updated`         | `onUpdated`         |
+| `beforeUnmount`   | `onBeforeUnmount`   |
+| `unmounted`       | `onUnmounted`       |
+| `errorCaptured`   | `onErrorCaptured`   |
+| `renderTracked`   | `onRenderTracked`   |
+| `renderTriggered` | `onRenderTriggered` |
+| `activated`       | `onActivated`       |
+| `deactivated`     | `onDeactivated`     |
+
+*因为 `setup` 是围绕 `beforeCreate` 和 `created` 生命周期钩子运行的，所以不需要显式地定义它们。换句话说，在这些钩子中编写的任何代码都应该直接在 `setup` 函数中编写。
+
+
+
+### 11 [setup中Provide函数和Inject函数（了解即可）](https://v3.cn.vuejs.org/guide/composition-api-provide-inject.html)
+
+### 12 侦听数据的变化
+在前面的Options API中，我们可以通过watch选项来侦听data或者props的数据变化，当数据变化时执行某一些操作。
+在Composition API中，我们可以使用watchEffect和watch来完成响应式数据的侦听；
+
+#### watch
+
+watch需要侦听特定的数据源，并且执行其回调函数。默认情况下它是惰性的，只有当被侦听的源发生变化时才会执行回调；
+
+```js
+const name = ref("kobe")
+  watch(name,(newValue, oldValue)=>{
+    console.log(newValue, oldValue)
+  })
+  const changeName = () => {
+    name.value='james'
+  }
+```
+
+侦听器还可以使用数组同时侦听多个源：
+
+```js
+  const name = ref("kobe")
+  const age=ref(18)
+  const changeName = () => {
+    name.value='james'
+  }
+  watch([name,age],(newValue, oldValue)=>{
+    console.log(newValue, oldValue)
+  })
+```
+
+如果我们希望侦听一个深层的侦听，那么依然需要设置 deep 为true. 也可以传入 immediate 立即执行；
+
+```js
+const info = reactive({
+    name:"why",
+    age:18,
+    friend:{
+      name:"kobe"
+    }
+  })
+  watch(info, (newValue, oldValue) => {
+    console.log(newValue, oldValue)
+  }, {
+    immediate: true,
+    deep:true
+  })
+```
+
+#### watchEffect
+当侦听到某些响应式数据变化时，我们希望执行某些操作，这个时候可以使用 watchEffect。
+ 我们来看一个案例：
+ 首先，watchEffect传入的函数会被立即执行一次，并且在执行的过程中会收集依赖；
+其次，只有收集的依赖发生变化时，watchEffect传入的函数才会再次执行；
+如果在发生某些情况下，我们希望停止侦听，这个时候我们可以获取watchEffect的返回值函数，调用该函数即可。
+
+```js
+<script setup>
+  import { watchEffect, watch, ref } from 'vue'
+      const counter = ref(0)
+      const name = ref("why")
+
+      // watch(counter, (newValue, oldValue) => {})
+
+      // 1.watchEffect传入的函数默认会直接被执行
+      // 2.在执行的过程中, 会自动的收集依赖(依赖哪些响应式的数据)
+      const stopWatch = watchEffect(() => {
+        console.log("-------", counter.value, name.value)
+
+        // 判断counter.value > 10
+        if (counter.value >= 10) {
+          stopWatch()
+        }
+      })
+</script>
+```
+
+### 13 封装两个hooks
+
+`useCounter.js`
+
+```js
+import { ref, onMounted } from 'vue'
+
+export default function useCounter() {
+  const counter = ref(0)
+  function increment() {
+    counter.value++
+  }
+  function decrement() {
+    counter.value--
+  }
+  onMounted(() => {
+    setTimeout(() => {
+      counter.value = 989
+    }, 1000);
+  })
+
+  return {
+    counter,
+    increment,
+    decrement
+  }
+}
+```
+
+`useTitle.js`
+
+```js
+import { ref, watch } from "vue";
+
+export default function useTitle(titleValue) {
+  // document.title = title
+
+  // 定义ref的引入数据
+  const title = ref(titleValue)
+
+  // 监听title的改变
+  watch(title, (newValue) => {
+    document.title = newValue
+  }, {
+    immediate: true
+  })
+
+  // 返回ref值
+  return title
+}
+```
+
