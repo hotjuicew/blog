@@ -213,7 +213,7 @@ eg 官网示例
 
     <!-- 2.style中的某些值, 来自data中 -->
     <!-- 2.1.动态绑定style, 在后面跟上 对象类型 (重要)-->
-    <h2 v-bind:style="{ color: fontColor, fontSize: fontSize + 'px' }">
+    <h2 :style="{ color: fontColor, fontSize: fontSize + 'px' }">
       哈哈哈哈
     </h2>
     <!-- 2.2.动态的绑定属性, 这个属性是一个对象 -->
@@ -2825,7 +2825,7 @@ export default function useCounter() {
 }
 ```
 
-`useTitle.js`
+`useTitle.js`修改title
 
 ```js
 import { ref, watch } from "vue";
@@ -2848,3 +2848,682 @@ export default function useTitle(titleValue) {
 }
 ```
 
+`useScrollPosition.vue`监听界面滚动位置
+
+```js
+import { reactive } from 'vue'
+
+export default function useScrollPosition() {
+  // 1.使用reative记录位置
+  const scrollPosition = reactive({
+    x: 0,
+    y: 0
+  })
+
+  // 2.监听滚动
+  document.addEventListener("scroll", () => {
+    scrollPosition.x = window.scrollX
+    scrollPosition.y = window.scrollY
+  })
+
+
+  return {
+    scrollPosition
+  }
+}
+```
+
+### 14 setup语法糖
+
+`App.vue`
+
+```vue
+<script setup>
+  // 1.所有编写在顶层中的代码, 都是默认暴露给template可以使用
+  import { ref, onMounted } from 'vue'
+  import ShowInfo from './ShowInfo.vue'  //组件只需导入即可，不需注册了
+
+  // 2.定义响应式数据
+  const message = ref("Hello World")
+  console.log(message.value)
+
+  // 3.定义绑定的函数
+  function changeMessage() {
+    message.value = "你好啊, 李银河!"
+  }
+
+  function infoBtnClick(payload) {
+    console.log("监听到showInfo内部的点击:", payload)
+  }
+
+  // 4.获取组件实例
+  const showInfoRef = ref()
+  onMounted(() => {
+    showInfoRef.value.foo()
+  })
+//不用写return了
+</script>
+
+```
+
+`showInfo.vue`
+
+```vue
+<template>
+  <div>ShowInfo: {{ name }}-{{ age }}</div>
+  <button @click="showInfoBtnClick">showInfoButton</button>
+</template>
+
+<script setup>
+
+// 定义props
+const props = defineProps({
+  name: {
+    type: String,
+    default: "默认值"
+  },
+  age: {
+    type: Number,
+    default: 0
+  }
+})
+
+// 绑定函数, 并且发出事件
+const emits = defineEmits(["infoBtnClick"])
+function showInfoBtnClick() {
+  emits("infoBtnClick", "showInfo内部发生了点击")
+}
+
+// 定义foo的函数
+function foo() {
+  console.log("foo function")
+}
+defineExpose({
+  foo
+})
+
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+
+
+
+- 顶层的绑定会被暴露给模板
+  当使用` <script setup>` 的时候，任何在 `<script setup> `声明的顶层的绑定 (包括变量，函数声明，以及 import 引入的内容) 
+  都能在模板中直接使用：
+- 导入的组件直接使用
+  组件只需导入即可，不需注册了
+- defineProps() 和 defineEmits()
+  用来代替原来的props（定义在子组件中让别人传进来） 和 emits 选项
+- defineExpose()
+  父组件调用子组件实例的某个方法，要在子组件中通过defineExpose()把需要暴露的东西放进去
+
+
+
+### 15 组件名一定要大驼峰
+
+## Vue-Router前端路由
+
+### 前端路由
+
+https://juejin.cn/post/6844903890278694919
+
+最开始的网页是多页面的，直到 Ajax 的出现，才慢慢有了 SPA。
+SPA 的出现大大提高了 WEB 应用的交互体验。在与用户的交互过程中，不再需要重新刷新页面，获取数据也是通过 Ajax 异步获取，页面显示变的更加流畅。
+
+但由于 SPA 中用户的交互是通过 JS 改变 HTML 内容来实现的，页面本身的 url 并没有变化，这导致了两个问题：
+1. SPA 无法记住用户的操作记录，无论是刷新、前进还是后退，都无法展示用户真实的期望内容。
+2. SPA 中虽然由于业务的不同会有多种页面展示形式，但只有一个 url，对 SEO 不友好，不方便搜索引擎进行收录。
+    前端路由就是为了解决上述问题而出现的。
+    ![img](/images/blog/2022/前端路由阶段.png)什么是前端路由，什么是后端路由，以及它们有什么异同？
+
+**后端路由**：当在地址栏切换不同的ur时，都会向服务器发送一个请求，服务器响应这个请求，并在服务端拼接好html文件返回给页面来展示。 优点：减轻了前端的压力，html都由后端拼接； 缺点：依赖于网络，网速慢，用户体验很差，项目比较庞大时，服务器端压力较大，不能在地址栏输入指定的url访问相应的模块，前后端不分离。前端路由的由来
+
+**前端路由是指**：
+不同的url地址对应到不同的内容或页面这个任务是由前端来完成的，就是前端路由，前端路由是不会刷新页面的，随着SPA单页应用的普及，以及前后端分离，现在的项目基本上都是前端路由。 优点：前后端的彻底分离，不刷新页面，用户体验较好，页面持久性较好，比如音乐网站，当你播放了一个歌曲后，切换了页面，播放不会中断。这都是spa的好处
+
+简单的说，就是在保证只有一个 HTML 页面，且与用户交互时不刷新和跳转页面的同时，为 SPA 中的每个视图展示形式匹配一个特殊的 url。在刷新、前进、后退和SEO时均通过这个特殊的 url 来实现。
+为实现这一目标，我们需要做到以下二点：
+1. 改变 url 且不让浏览器像服务器发送请求。
+2. 可以监听到 url 的变化
+接下来要介绍的 hash 模式和 history 模式，就是实现了上面的功能
+
+#### hash 模式
+
+这里的 hash 就是指 url 后的 # 号以及后面的字符，本质上是改变window.location的href属性。比如说 "[www.baidu.com/#hashhash](https://link.juejin.cn?target=http%3A%2F%2Fwww.baidu.com%2F%23hashhash)" ，其中 "#hashhash" 就是我们期望的 hash 值。
+
+由于 hash 值的变化不会导致浏览器像服务器发送请求，而且 hash 的改变会触发 hashchange 事件，浏览器的前进后退也能对其进行控制，所以在 H5 的 history 模式出现之前，基本都是使用 hash 模式来实现前端路由。
+
+#### history 模式
+
+在 HTML5 之前，浏览器就已经有了 history 对象。但在早期的 history 中只能用于多页面的跳转：
+
+```scss
+history.go(-1);       // 后退一页
+history.go(2);        // 前进两页
+history.forward();     // 前进一页
+history.back();      // 后退一页
+复制代码
+```
+
+在 HTML5 的规范中，history 新增了以下几个 API：
+
+```scss
+history.pushState();         // 添加新的状态到历史状态栈
+history.replaceState();      // 用新的状态代替当前状态
+history.state                // 返回当前状态对象
+复制代码
+```
+
+来自MDN的解释：
+
+> HTML5引入了 history.pushState() 和 history.replaceState() 方法，它们分别可以添加和修改历史记录条目。这些方法通常与window.onpopstate 配合使用。
+
+history.pushState() 和 history.replaceState() 均接收三个参数（state, title, url）
+
+参数说明如下：
+
+1. state：合法的 Javascript 对象，可以用在 popstate 事件中
+2. title：现在大多浏览器忽略这个参数，可以直接用 null 代替
+3. url：任意有效的 URL，用于更新浏览器的地址栏
+
+history.pushState() 和 history.replaceState() 的区别在于：
+
+- history.pushState() 在保留现有历史记录的同时，将 url 加入到历史记录中。
+- history.replaceState() 会将历史记录中的当前页面历史替换为 url。
+
+由于 history.pushState() 和 history.replaceState() 可以改变 url 同时，不会刷新页面，所以在 HTML5 中的 histroy 具备了实现前端路由的能力。
+
+回想我们之前完成的 hash 模式，当 hash 变化时，可以通过 hashchange 进行监听。 而 history 的改变并不会触发任何事件，所以我们无法直接监听 history 的改变而做出相应的改变。
+
+所以，我们需要换个思路，我们可以罗列出所有可能触发 history 改变的情况，并且将这些方式一一进行拦截，变相地监听 history 的改变。
+
+对于单页应用的 history 模式而言，url 的改变只能由下面四种方式引起：
+
+1. 点击浏览器的前进或后退按钮
+2. 点击 a 标签
+3. 在 JS 代码中触发 history.pushState 函数
+4. 在 JS 代码中触发 history.replaceState 函数
+
+### Vue Router
+
+Vue Router 是 Vue.js 的官方路由：
+
+- 它与 Vue.js 核心深度集成，让用 Vue.js 构建单页应用（SPA）变得非常容易；
+- 目前Vue路由最新的版本是4.x版本，我们上课会基于最新的版本讲解；
+
+vue-router是基于路由和组件的
+- 路由用于设定访问路径, 将路径和组件映射起来；
+- 在vue-router的单页面应用中, 页面的路径的改变就是组件的切换；
+ 安装Vue Router：
+  npm install vue-router
+
+#### 使用vue-router的步骤:
+- 第一步：创建路由需要映射的组件（打算显示的页面）；
+- 第二步：通过createRouter创建路由对象，并且传入routes和history模式；
+  - 配置路由映射: 组件和路径映射关系的routes数组；
+  - 创建基于hash或者history的模式；
+- 第三步：使用app注册路由对象（use方法）；
+- 第四步：路由使用: 通过`<router-link>`和`<router-view>`；
+![img](/images/blog/2022/路由的基本使用流程.png)
+
+
+举个例子：
+
+vue项目src目录下文件树如下
+
+└─src
+    │  App.vue
+    │  main.js
+    │
+    ├─router
+    │      index.js
+    │
+    └─Views
+            About.vue
+            Home.vue
+            HomeRanking.vue
+            HomeRecommend.vue
+            NotFound.vue
+            User.vue
+
+`index.js`
+
+```js
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+
+// import Home from '../Views/Home.vue'
+// import About from '../Views/About.vue'
+
+// 路由的懒加载
+// 里面/* */注释会被webpack读取到
+// const Home = () => import(/* webpackChunkName: 'home' */"../Views/Home.vue")
+// const About = () => import(/* webpackChunkName: 'about' */"../Views/About.vue")
+
+// 创建一个路由: 映射关系
+const router = createRouter({
+  // 指定采用的模式: hash
+  history: createWebHashHistory(),
+  // history: createWebHistory(),
+  // 映射关系
+  routes: [
+    { 
+      //redirect是重定向, 也就是我们将根路径重定向到/home的路径下.可以让路径默认跳到到首页, 并且<router-view>渲染首页组件
+      path: "/", 
+      redirect: "/home" 
+    },
+    { 
+      name: "home",
+      path: "/home", 
+      component: () => import(/* webpackChunkName: 'home' */"../Views/Home.vue")//路由的懒加载和下面放在一起
+      meta: {
+        name: "why",
+        age: 18
+      },
+      children: [
+        {
+          path: "/home",
+          redirect: "/home/recommend"
+        },
+        {
+          path: "recommend", // /home/recommend
+          component: () => import("../Views/HomeRecommend.vue")
+        },
+        {
+          path: "ranking", // /home/ranking
+          component: () => import("../Views/HomeRanking.vue")
+        },
+      ]
+    },
+    { 
+      name: "about",
+      path: "/about", 
+      component: () => import(/* webpackChunkName: 'home' */"../Views/Home.vue") 
+    },
+    {
+      //动态路由
+      path: "/user/:id",
+      component: () => import("../Views/User.vue")
+    },
+    {
+      // abc/cba/nba
+      path: "/:pathMatch(.*)*",
+      component: () => import("../Views/NotFound.vue")
+    }
+  ]
+})
+
+export default router
+
+```
+
+`main.js`
+
+```js
+import { createApp } from 'vue'
+import router from './router'
+import App from './App.vue'
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
+
+```
+
+`App.vue`
+
+```vue
+<template>
+  <div class="app">
+    <h2>App Content</h2>
+    <div class="nav">
+      //设置replace 属性的话，每次切换的路径不会记录到历史记录里了
+      <router-link to="/home" replace>首页</router-link>
+      //设置active-class属性：在激活的a元素上应用一个class，默认是router-link-active，也可以改
+      <router-link to="/about" replace active-class="active">关于</router-link>
+
+      <router-link to="/user/123">用户123</router-link>
+      <router-link to="/user/321">用户321</router-link>
+
+      <!-- 其他元素跳转 -->
+      <span @click="homeSpanClick">首页</span>
+      <button @click="aboutBtnClick">关于</button>
+    </div>
+      <!-- 占位组件 -->
+    <router-view></router-view>
+  </div>
+</template>
+
+<script setup>
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  // 监听元素的点击
+  function homeSpanClick() {
+    // 跳转到首页
+    // router.push("/home")
+    router.push({
+      // name: "home"
+      path: "/home"
+    })
+  }
+  function aboutBtnClick() {
+    // 跳转到关于
+    router.push({
+      path: "/about",
+      query: {
+        name: "why",
+        age: 18
+      }
+    })
+  }
+
+</script>
+
+<style>
+
+  .router-link-active {
+    color: red;
+    font-size: 20px;
+  }
+
+  .active {
+    color: red;
+    font-size: 20px;
+  }
+
+</style>
+
+```
+
+`home.vue`
+
+```vue
+<template>
+  <div class="home">
+    <h2>Home</h2>
+
+    <div class="home-nav">
+      <router-link to="/home/recommend">推荐</router-link>
+      <router-link to="/home/ranking">排行</router-link>
+    </div>
+
+    <!-- 占位组件 -->
+    <router-view></router-view>
+  </div>
+</template>
+
+<script setup>
+
+</script>
+
+<style scoped>
+</style>
+
+```
+
+#### 路由懒加载
+- 当打包构建应用时，JavaScript 包会变得非常大，影响页面加载：
+  - 如果我们能把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就会更加高效；
+  - 也可以提高首屏的渲染效率；
+- 其实这里还是我们前面讲到过的webpack的分包知识，而Vue Router默认就支持动态来导入组件：
+  - 这是因为component可以传入一个组件，也可以接收一个函数，该函数 需要放回一个Promise；
+  - 而import函数就是返回一个Promise；
+
+路由的其他属性：
+
+- name属性：路由记录独一无二的名称；
+- meta属性：自定义的数据
+
+#### 动态路由
+很多时候我们需要将给定匹配模式的路由映射到同一个组件,它的路径就不能写死
+例如，我们可能有一个 User 组件，它应该对所有用户进行渲染，但是用户的ID是不同的；
+在Vue Router中，我们可以在路径中使用一个动态字段来实现，我们称之为 路径参数；
+
+```js
+  {
+      path: "/user/:id",
+      component: () => import("../Views/User.vue")
+    },
+```
+在router-link中进行如下跳转：
+```vue
+  <router-link to="/user/123">用户123</router-link>
+```
+```vue
+  <router-link to="/user/321">用户321</router-link>
+```
+**那么在User中如何获取到对应的值呢?**
+在template中，直接通过 $route.params获取值；
+- 在created中，通过 this.$route.params获取值；
+- 在setup中，我们要使用 vue-router库给我们提供的一个hook useRoute；该Hook会返回一个Route对象，对象中保存着当前路由相关的值；
+```vue
+<template>
+  <div class="user">
+    <!-- 1.在模板中获取到id -->
+    <h2>User: {{ $route.params.id }}</h2>
+  </div>
+</template>
+
+<script setup>
+  import { useRoute, onBeforeRouteUpdate } from 'vue-router'
+  //2.在脚本中获取id
+  const route = useRoute()
+  console.log(route.params.id)
+
+  // 获取route跳转id（见下文 导航守卫）
+  onBeforeRouteUpdate((to, from) => {
+    console.log("from:", from.params.id)
+    console.log("to:", to.params.id)
+  })
+
+</script>
+
+<style scoped>
+</style>
+```
+
+#### 导航守卫
+
+导航守卫又称路由守卫，实时监控路由跳转时的过程，在路由跳转的各个过程执行相应的操作，类似于生命周期函数，在开发过程中经常被使用，比如用户点击一个页面，如果未登录就调到登录页面，已登录就让用户正常进入。
+全局路由一共分为三类：全局守卫，路由独享的守卫，组件内的守卫。
+
+#### 1.全局守卫
+
+```
+全局守卫有三种：
+    1.router.beforeEach（全局前置守卫）
+    2.router.beforeResolve（全局解析守卫）
+    3.router.afterEach（全局后置守卫）
+```
+
+
+
+##### 1.1.router.beforeEach（全局前置守卫）
+
+以一个简单的例子来解释router.beforeEach
+假设我们现在做一个这样的需求，用户在未登录的时候进入任意页面，我们就让用户跳转到登录页面，在已登录的时候让用户正常跳
+转到点击的页面。
+
+准备好三个组件：`home.vue`,`login.vue`,`about.vue`
+
+home.vue的内容：
+
+```vue
+<template>
+  <div class="hello">
+    <button @click="$router.push('/about')">去关于页面</button>
+  </div>
+</template>
+<script>
+  export default {
+    name: 'home',
+    data() {
+      return {}
+    }
+  }
+</script>
+<style scoped>
+</style>
+```
+
+login.vue的内容：
+
+```vue
+<template>
+    <div>登录页面</div>
+</template>
+<script>
+    export default {
+        name: "about"
+    }
+</script>
+<style scoped>
+</style>
+```
+
+about.vue的内容：
+```VUE
+<template>
+    <div>关于页面</div>
+</template>
+<script>
+    export default {
+        name: "about"
+    }
+</script>
+<style scoped>
+</style>
+```
+
+router配置文件内容：
+
+```JS
+import Vue from 'vue'
+import Router from 'vue-router'
+import home from '@/components/home'
+import login from '@/components/login'
+import about from '@/components/about'
+
+Vue.use(Router)
+const ISLOGIN = true   //登录状态模拟
+const router = new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: home,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: about
+    }
+  ]
+})
+
+router.beforeEach((to, from, next) => {   //全局全局前置守卫
+  //to : 将要进入的目标路由对象
+  //from : 即将离开的目标路由对象
+  //执行跳转的下一步钩子
+  console.log(to)
+  console.log(from)
+  if(to.name != 'login'){ //如果不是登录页面
+    if(ISLOGIN)next()   //已登录就执行跳转
+    else next({name:'login'})   //否则跳转到登录页面
+  }else{ //如果是登录页面
+    if(ISLOGIN)next({name:'/'}) //已登录就跳转到首页
+    else  next()  //否则正常进入登录页面
+  }
+})
+export default router
+```
+
+我们可以看到，每次路由跳转，router.beforeEach都会执行，并且接受三个参数，to记录着将要进入的目标路由对象的详细，from记录着即将离开的目标路由对象的信息，next()表示执行下一步，router.beforeEach就是全局路由跳转时触发执行的函数。
+
+##### 1.2.router.beforeResolve(全局解析守卫)
+
+和全局前置守卫类似，区别是在跳转被确认之前，同时在所有组件内守卫和异步路由组件都被解析之后，解析守卫才调用。
+
+##### 1.3.router.afterEach(全局后置钩子)
+
+只接受to和from,不会接受 next 函数也不会改变导航本身
+
+#### 2、路由独享守卫
+
+独享守卫只有一种:beforeEnter。
+该守卫接收的参数与全局守卫是一样的，但是该守卫只在其他路由跳转至配置有beforeEnter路由表信息时才生效。
+router配置文件内容：
+
+```JS
+{
+   path: '/about',
+   name: 'about',
+   component: about,
+   beforeEnter:(to,from,next)=>{
+      console.log(to);
+      console.log(from);
+      next()
+   }
+```
+
+#### 3、组件内守卫
+
+组件内守卫一共有三个：
+
+```
+ 	beforeRouteEnter，
+    beforeRouteUpdate，
+    beforeRouteLeave
+```
+
+三者分别对应：进入该路由时执行，该路由中参数改变时执行，离开该路由时执行。
+
+```VUE
+<template>
+  <div>关于页面</div>
+</template>
+<script>
+  export default {
+    name: "about",
+    beforeRouteEnter(to, from, next) {
+      //进入该路由时执行
+    },
+    beforeRouteUpdate(to, from, next) {
+      //该路由参数更新时执行
+    },
+    beforeRouteLeave(to, from, next) {
+      //离开该路由时执行
+    }
+  }
+</script>
+<style scoped>
+</style>
+```
+
+
+完整的导航解析流程
+
+1. 导航被触发。
+2. 在失活的组件里调用 `beforeRouteLeave` 守卫。
+3. 调用全局的 `beforeEach` 守卫。
+4. 在重用的组件里调用 `beforeRouteUpdate` 守卫(2.2+)。
+5. 在路由配置里调用 `beforeEnter`。
+6. 解析异步路由组件。
+7. 在被激活的组件里调用 `beforeRouteEnter`。
+8. 调用全局的 `beforeResolve` 守卫(2.5+)。
+9. 导航被确认。
+10. 调用全局的 `afterEach` 钩子。
+11. 触发 DOM 更新。
+12. 调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数，创建好的组件实例会作为回调函数的参数传入。

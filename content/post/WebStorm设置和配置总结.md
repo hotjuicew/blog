@@ -38,10 +38,11 @@ tags: ["WebStorm"]
     
     <style scoped>
     </style>
-    ```
+  ```
 - **Live Templates** 代码片段快捷键设置。我们可以直接修改里面现有的代码快捷键里面的代码片断，我们也可以自己添加新的代码片段快捷键。在代码片段的设置中，有一些`$ARRAY$`这种的占位代码，当在输入代码片段的时候，会让你自己输入。详细看后文的动图演示。设置完之后，还要设定可以在哪些文件中使用，一般选择Everywhere，所有的文件都可使用这个代码快捷键
 - **Emmet** 因为相比于Tab键，我更习惯Enter键，所以设置为Enter。这样子我们输入div就是按Enter而不是tab来展开了
 - **Languages&Frameworks**  >node.js， 选中Coding assistance for Node.js.这样就把node.js代码提示打开了（前提是先要安装node）
+- **Match case**  在Editor -> General -> Code Completion中取消选中Match case，可以在代码提示时忽略大小写
 
 ### Plugins
 - **File Path Autocomplete**
@@ -51,3 +52,19 @@ tags: ["WebStorm"]
 安装完成后，在编辑器中输入中文，右键即可翻译。为变量起名时可以用
 - **.ignore**
 我们在项目中不想让把某个文件上传到git，通常情况下我们需要自己往.gitignore文件中去添加要忽略的文件，在webstorm中有一款名为.ignore的插件，可以通过右键不想上传的文件即可实现将其添加到配置文件中。
+- **Key Promoter X / Presentation Assistant：快捷键显示**
+  很多大佬的博客推介 Key Promoter X，可以在你点某个功能的时候提示你这个功能的快捷键，多用一用就可以脱离鼠标，使用快捷键触发这些功能。
+- **Import Cost**
+  VSCode上也有这个插件，会在你引入的库后面告诉你这个库的体积大小，和 gzip 后的包体积。
+
+
+
+## Tips
+
+-  **正则表达式快捷验证**
+
+  在正则表达式上按 `option/alt + enter` 可以就地快捷验证正则表达式，这是一个快速功能，在做表单验证的一些正则表达式的时候非常实用
+
+- **全局搜索**
+
+  双击 `shift` 可以打开随处搜索功能，这里可以搜索设置、代码、文件名、文件夹名、改变主题等等
