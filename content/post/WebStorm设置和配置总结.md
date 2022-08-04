@@ -46,16 +46,26 @@ tags: ["WebStorm"]
 
 ### Plugins
 - **File Path Autocomplete**
+
 - **One Dark theme**
+
 - **Rainbow Brackets**
+
 - **Translation**
-安装完成后，在编辑器中输入中文，右键即可翻译。为变量起名时可以用
+  安装完成后，在编辑器中输入中文，右键即可翻译。为变量起名时可以用
+
 - **.ignore**
-我们在项目中不想让把某个文件上传到git，通常情况下我们需要自己往.gitignore文件中去添加要忽略的文件，在webstorm中有一款名为.ignore的插件，可以通过右键不想上传的文件即可实现将其添加到配置文件中。
+  我们在项目中不想让把某个文件上传到git，通常情况下我们需要自己往.gitignore文件中去添加要忽略的文件，在webstorm中有一款名为.ignore的插件，可以通过右键不想上传的文件即可实现将其添加到配置文件中。
+
 - **Key Promoter X / Presentation Assistant：快捷键显示**
   很多大佬的博客推介 Key Promoter X，可以在你点某个功能的时候提示你这个功能的快捷键，多用一用就可以脱离鼠标，使用快捷键触发这些功能。
+  
 - **Import Cost**
   VSCode上也有这个插件，会在你引入的库后面告诉你这个库的体积大小，和 gzip 后的包体积。
+  
+- **Atom Material Icons**
+
+  为文件夹、文件增加图标，让编译器看起来更美观，也是一款可以愉快coding的好用插件
 
 
 
