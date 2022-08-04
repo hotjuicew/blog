@@ -3063,7 +3063,7 @@ vue-router是基于路由和组件的
  安装Vue Router：
   npm install vue-router
 
-#### 使用vue-router的步骤:
+#### 1.使用vue-router的步骤:
 - 第一步：创建路由需要映射的组件（打算显示的页面）；
 - 第二步：通过createRouter创建路由对象，并且传入routes和history模式；
   - 配置路由映射: 组件和路径映射关系的routes数组；
@@ -3268,7 +3268,7 @@ app.mount('#app')
 
 ```
 
-#### 路由懒加载
+#### 2.路由懒加载
 - 当打包构建应用时，JavaScript 包会变得非常大，影响页面加载：
   - 如果我们能把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就会更加高效；
   - 也可以提高首屏的渲染效率；
@@ -3281,7 +3281,7 @@ app.mount('#app')
 - name属性：路由记录独一无二的名称；
 - meta属性：自定义的数据
 
-#### 动态路由
+#### 3.动态路由
 很多时候我们需要将给定匹配模式的路由映射到同一个组件,它的路径就不能写死
 例如，我们可能有一个 User 组件，它应该对所有用户进行渲染，但是用户的ID是不同的；
 在Vue Router中，我们可以在路径中使用一个动态字段来实现，我们称之为 路径参数；
@@ -3329,12 +3329,12 @@ app.mount('#app')
 </style>
 ```
 
-#### 导航守卫
+#### 4.导航守卫
 
 导航守卫又称路由守卫，实时监控路由跳转时的过程，在路由跳转的各个过程执行相应的操作，类似于生命周期函数，在开发过程中经常被使用，比如用户点击一个页面，如果未登录就调到登录页面，已登录就让用户正常进入。
 全局路由一共分为三类：全局守卫，路由独享的守卫，组件内的守卫。
 
-#### 1.全局守卫
+##### 4.1全局守卫
 
 ```
 全局守卫有三种：
@@ -3345,7 +3345,7 @@ app.mount('#app')
 
 
 
-##### 1.1.router.beforeEach（全局前置守卫）
+###### 4.1.1router.beforeEach（全局前置守卫）
 
 以一个简单的例子来解释router.beforeEach
 假设我们现在做一个这样的需求，用户在未登录的时候进入任意页面，我们就让用户跳转到登录页面，在已登录的时候让用户正常跳
@@ -3452,15 +3452,15 @@ export default router
 
 我们可以看到，每次路由跳转，router.beforeEach都会执行，并且接受三个参数，to记录着将要进入的目标路由对象的详细，from记录着即将离开的目标路由对象的信息，next()表示执行下一步，router.beforeEach就是全局路由跳转时触发执行的函数。
 
-##### 1.2.router.beforeResolve(全局解析守卫)
+###### 4.1.2.router.beforeResolve(全局解析守卫)
 
 和全局前置守卫类似，区别是在跳转被确认之前，同时在所有组件内守卫和异步路由组件都被解析之后，解析守卫才调用。
 
-##### 1.3.router.afterEach(全局后置钩子)
+###### 4.1.3.router.afterEach(全局后置钩子)
 
 只接受to和from,不会接受 next 函数也不会改变导航本身
 
-#### 2、路由独享守卫
+##### 4.2、路由独享守卫
 
 独享守卫只有一种:beforeEnter。
 该守卫接收的参数与全局守卫是一样的，但是该守卫只在其他路由跳转至配置有beforeEnter路由表信息时才生效。
@@ -3478,7 +3478,7 @@ router配置文件内容：
    }
 ```
 
-#### 3、组件内守卫
+##### 4.3、组件内守卫
 
 组件内守卫一共有三个：
 
@@ -3527,3 +3527,1577 @@ router配置文件内容：
 10. 调用全局的 `afterEach` 钩子。
 11. 触发 DOM 更新。
 12. 调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数，创建好的组件实例会作为回调函数的参数传入。
+
+#### 5.NotFound
+
+对于那些没有匹配到的路由，我们通常会匹配到固定的某个页面
+这个时候我们可编写一个动态路由用于匹配所有的页面
+我们可以通过 $route.params.pathMatch获取到传入的参数
+
+```js
+    {
+      //  /后面匹配任何东西
+      path: "/:pathMatch(.*)*",
+      component: () => import("../Views/NotFound.vue")
+    }
+```
+
+在/:pathMatch(.*)后面又加了一个  *，加 * 和不加 * 的区别在于解析的时候，是否解析 /：
+![img](/images/blog/2022/匹配规则.png)
+
+
+`NotFound.vue`
+
+```vue
+<template>
+  <div class="not-found">
+    <h2>NotFound: 您当前的路径{{ $route.params.pathMatch }}不正确, 请输入正确的路径!</h2>
+  </div>
+</template>
+
+<script setup>
+</script>
+
+<style scoped>
+
+  .not-found {
+    color: red;
+  }
+
+</style>
+```
+
+#### 6.路由的嵌套
+什么是路由的嵌套呢？
+	目前我们匹配的Home、About、User等都属于第一层路由，我们在它们之间可以来回进行切换；
+但是呢，我们Home页面本身，也可能会在多个组件之间来回切换：
+	比如Home中包括Product、Message，它们可以在Home内部来回切换；
+	这个时候我们就需要使用嵌套路由，在Home中也使用 router-view 来占位之后需要渲染的组件
+
+```js
+routes: [
+    { 
+      path: "/", 
+      redirect: "/home" 
+    },
+    { 
+      name: "home",
+      path: "/home", 
+      component: () => import("../Views/Home.vue"),
+      meta: {
+        name: "why",
+        age: 18
+      },
+        //增加children数组来配置home页面下的子组件路由切换
+      children: [
+        {
+          path: "/home",
+          redirect: "/home/recommend"
+        },
+        {
+          path: "recommend", // /home/recommend
+          component: () => import("../Views/HomeRecommend.vue")
+        },
+        {
+          path: "ranking", // /home/ranking
+          component: () => import("../Views/HomeRanking.vue")
+        },
+      ]
+    },
+    { 
+      name: "about",
+      path: "/about", 
+      component: () => import("../Views/About.vue") 
+    },
+    {
+      path: "/user/:id",
+      component: () => import("../Views/User.vue")
+    },
+    {
+      //  /后面匹配任何东西
+      path: "/:pathMatch(.*)*",
+      component: () => import("../Views/NotFound.vue")
+    }
+  ]
+```
+
+#### 7.代码来完成页面的跳转
+
+不通过routes中映射关系的配置和`<router-link>`进行跳转，而使用代码来完成页面的跳转。比如通过点击一个button元素
+`App.vue`中
+
+```vue
+  <!-- 其他元素跳转 -->
+      <span @click="homeSpanClick">首页</span>
+      <button @click="aboutBtnClick">关于</button>
+```
+
+```vue
+<script setup>
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  // 监听元素的点击
+  function homeSpanClick() {
+    // 跳转到首页
+    router.push("/home")
+  }
+  function aboutBtnClick() {
+    // 跳转到关于
+    // 这种写法可以在query中传参数
+    router.push({//push和replace的区别：一个是保留历史记录，一个不保留
+      path: "/about",
+      query: {
+        name: "why",
+        age: 18
+      }
+    })
+  }
+
+</script>
+```
+
+`About.vue`中可以收到传过来的参数
+
+```vue
+ <h2>About: {{ $route.query }}</h2>
+```
+
+`About.vue`中还可以加一个返回按钮，
+
+```vue
+ <button @click="backBtnClick">返回</button>
+```
+
+```vue
+<script setup>
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  function backBtnClick() {
+    // router.back()   //返回
+    // router.forward()   //向前一步
+
+    // go(delta)    //向前或向后n步
+    // go(1) -> forward()
+    // go(-1) -> back()
+    router.go(-1)
+  }
+
+</script>
+```
+
+#### 8.动态添加路由
+某些情况下我们可能需要动态的来添加路由：比如根据用户不同的权限，注册不同的路由。
+这个时候我们可以使用一个方法 addRoute；
+
+├─router
+│      index.js
+
+```js
+......
+
+// 1.动态管理路由
+let isAdmin = true //在公司实际操作中应该是去动态获取的数据
+if (isAdmin) {
+  // 一级路由
+  router.addRoute({
+    path: "/admin",
+    component: () => import("../Views/Admin.vue")
+  })
+
+  // 在home中添加vip子页面
+  router.addRoute("home", {
+    path: "vip",
+    component: () => import("../Views/HomeVip.vue")
+  })
+}
+
+// 获取router中所有的映射路由对象
+console.log(router.getRoutes())
+
+
+// 2.路由导航守卫
+// 进行任何的路由跳转之前, 传入的beforeEach中的函数都会被回调
+// 需求: 进入到订单(order)页面时, 判断用户是否登录(isLogin -> localStorage保存token)
+// 情况一: 用户没有登录, 那么跳转到登录页面, 进行登录的操作
+// 情况二: 用户已经登录, 那么直接进入到订单页面
+router.beforeEach((to, from) => {
+  // 1.进入到任何别的页面时, 都跳转到login页面
+  // if (to.path !== "/login") {
+  //   return "/login"
+  // }
+
+  // 2.进入到订单页面时, 判断用户是否登录
+  const token = localStorage.getItem("token")
+  if (to.path === "/order" && !token) {
+    return "/login"
+  }
+})
+
+
+export default router
+
+```
+删除路由有以下三种方式：
+方式一：添加一个name相同的路由；
+方式二：通过removeRoute方法，传入路由的名称；
+方式三：通过addRoute方法的返回值回调；
+路由的其他方法补充：
+router.hasRoute()：检查路由是否存在。
+router.getRoutes()：获取一个包含所有路由记录的数组。
+
+#### 9.导航守卫 补充
+vue-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。
+全局的前置守卫beforeEach是在导航触发时会被回调的：
+- 它有两个参数：
+  - to：即将进入的路由Route对象；
+  - from：即将离开的路由Route对象；
+- 它有返回值：
+  - false：取消当前导航；
+  - 不返回或者undefined：进行默认导航；
+  - 返回一个路由地址：可以是一个string类型的路径；也可以是一个对象，对象中包含path、query、params等信息；
+
+ **比如我们完成一个功能，只有登录后才能看到其他页面：**
+
+src
+    │  App.vue
+    │  main.js
+    │
+    ├─router
+    │      index.js
+    │
+    └─Views
+            About.vue
+            Admin.vue
+            Home.vue
+            HomeRanking.vue
+            HomeRecommend.vue
+            HomeVip.vue
+            Login.vue
+            NotFound.vue
+            Order.vue
+            User.vue
+`index.js`中添加代码
+
+```js
+    {
+      path: "/login",
+      component: () => import("../Views/Login.vue")
+    },
+```
+
+```js
+// 2.路由导航守卫
+// 进行任何的路由跳转之前, 传入的beforeEach中的函数都会被回调
+// 需求: 进入到订单(order)页面时, 判断用户是否登录(isLogin -> localStorage保存token)
+// 情况一: 用户没有登录, 那么跳转到登录页面, 进行登录的操作
+// 情况二: 用户已经登录, 那么直接进入到订单页面
+router.beforeEach((to, from) => {
+  // 1.进入到任何别的页面时, 都跳转到login页面
+  // if (to.path !== "/login") {
+  //  //跳转到login页面  
+  //   return "/login"
+  // }
+
+  // 2.进入到订单页面时, 判断用户是否登录
+  const token = localStorage.getItem("token")
+  if (to.path === "/order" && !token) {
+    return "/login"
+  }
+})
+
+
+export default router
+```
+
+`Login.vue`
+
+```vue
+<template>
+  <div class="login">
+    <h2>登录页面</h2>
+    <button @click="loginClick">登录</button>
+  </div>
+</template>
+
+<script setup>
+
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  function loginClick() {
+    // 向服务器发送请求, 服务器会返回token
+    localStorage.setItem("token", "coderwhy")
+
+    // 跳转到order页面
+    router.push("/order")
+  }
+
+</script>
+
+<style scoped>
+</style>
+
+```
+
+`Home.vue`
+
+```vue
+    <button @click="logoutClick">退出登录</button>
+```
+
+```vue
+<script setup>
+
+  function logoutClick() {
+    localStorage.removeItem("token")   //退出登录只需remove token
+  }
+
+</script>
+```
+
+## Vuex状态管理
+
+### 1.认识应用状态管理
+
+**什么是状态管理**
+在开发中，我们会的应用程序需要处理各种各样的数据，这些数据需要保存在我们应用程序中的某一个位置，对于这些数据的管理我们就 称之为是 状态管理。
+
+**在前面我们是如何管理自己的状态呢**？
+	在Vue开发中，我们使用组件化的开发方式；
+- 而在组件中我们定义**data**或者在setup中返回使用的数据，这些数
+  据我们称之为**state**；
+- 在**模块template**中我们可以使用这些数据，模块最终会被渲染成
+  DOM，我们称之为**View**；
+- 在模块中我们会产生一些**行为事件**，处理这些行为事件时，有可能
+  会修改state，这些行为事件我们称之为**actions**；
+
+复杂的状态管理
+
+JavaScript需要管理的状态越来越多，越来越复杂；这些状态包括服务器返回的数据、缓存数据、用户操作产生的数据等等；也包括一些UI的状态，比如某些元素是否被选中，是否显示加载动效，当前分页。
+我们将组件的内部状态抽离出来，以一个全局单例的方式来管理
+在这种模式下，我们的组件树构成了一个巨大的 “试图View”；不管在树的哪个位置，任何组件都能获取状态或者触发行为；通过定义和隔离状态管理中的各个概念，并通过强制性的规则来维护视图和状态间的独立性，我们的代码边会变得更加结构化和易于维护、跟踪；
+![img](/images/blog/2022/组件中复杂状态的管理方式.png)
+
+### 2.核心概念State
+
+#### 2.1 Vuex的基本使用
+
+安装vuex
+
+```
+npm install vuex
+```
+
+创建store文件夹   
+
+```
+src-store-index.js
+```
+
+`index.js`
+
+```js
+import { createStore } from 'vuex'
+import { CHANGE_INFO } from './mutation_types'
+
+const store = createStore({
+  state: () => ({
+    counter: 100,
+  })  
+})
+
+export default store
+```
+
+在组件中使用
+
+```vue
+<template>
+  <div class="app">
+    <h2>Home当前计数: {{ $store.state.counter }}</h2>
+    <h2>Computed当前计数: {{ storeCounter }}</h2>
+    <h2>Setup当前计数: {{ counter }}</h2>
+    <button @click="increment">+1</button>
+  </div>
+</template>
+
+<script>
+//options api中使用store
+  export default {
+    computed: {
+      storeCounter() {
+        return this.$store.state.counter
+      }
+    }
+  }
+</script>
+
+<script setup>
+  import { toRefs } from 'vue'
+  import { useStore } from 'vuex'
+//在setup中使用store
+  const store = useStore()
+  const { counter } = toRefs(store.state)  //加上toRefs，counter才会变成响应式的，不然就会丢失响应式
+  
+  function increment() {
+    // store.state.counter++
+    store.commit("increment")
+  }
+</script>
+
+<style scoped>
+</style>
+```
+
+**Vuex和单纯的全局对象有什么区别呢？**
+第一：Vuex的状态存储是响应式的
+	当Vue组件从store中读取状态的时候，若store中的状态发生变化，那么相应的组件也会被更新；
+第二：你不能直接改变store中的状态（能够修改成功但vuex不建议这样做）
+	改变store中的状态的唯一途径就显示提交 (commit) mutation；
+	这样使得我们可以方便的跟踪每一个状态的变化，从而让我们能够通过一些工具帮助我们更好的管理应用的状态；
+
+#### 2.2 mapState
+
+```vue
+<template>
+  <div class="app">
+    <button @click="incrementLevel">修改level</button>
+    <!-- 1.在模板中直接使用多个状态 -->
+    <h2>name: {{ $store.state.name }}</h2>
+    <h2>level: {{ $store.state.level }}</h2>
+    <h2>avatar: {{ $store.state.avatarURL }}</h2>
+
+    <!-- 2.计算属性(映射状态: 数组语法) -->
+    <!-- <h2>name: {{ name() }}</h2>
+    <h2>level: {{ level() }}</h2> -->
+
+    <!-- 3.计算属性(映射状态: 对象语法) -->
+    <!-- <h2>name: {{ sName }}</h2>
+    <h2>level: {{ sLevel }}</h2> -->
+    
+    <!-- 4.setup计算属性(映射状态: 对象语法) -->
+    <h2>name: {{ name }}</h2>
+    <h2>level: {{ level }}</h2>
+  </div>
+</template>
+
+<script>
+  import { mapState } from 'vuex'
+
+  export default {
+    computed: {
+      fullname() {
+        return "xxx"
+      },
+      // name() {
+      //   return this.$store.state.name
+      // },
+      ...mapState(["name", "level", "avatarURL"]),  //返回的是一个个函数
+      ...mapState({
+        sName: state => state.name,
+        sLevel: state => state.level
+      })
+    }
+  }
+</script>
+
+<script setup>
+  // import { computed, toRefs } from 'vue'
+  import { mapState, useStore } from 'vuex'
+  // import useState from "../hooks/useState"
+
+  // 1.一步步完成
+  // const { name, level } = mapState(["name", "level"])
+  // const store = useStore()
+  // const cName = computed(name.bind({ $store: store }))
+  // const cLevel = computed(level.bind({ $store: store }))
+
+  // 2.使用自己封装的函数useState
+  // const { name, level } = useState(["name", "level"])
+
+  // 3.(推荐)直接对store.state进行解构,不用mapState了
+  const store = useStore()
+  const { name, level } = toRefs(store.state)
+
+  function incrementLevel() {
+    store.state.level++
+  }
+
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+### 3.核心概念Getters
+
+#### 3.1 getters基本使用
+
+某些属性我们可能需要经过变化后来使用，这个时候可以使用getters
+
+```vue
+<template>
+  <div class="app">
+    <!-- <button @click="incrementLevel">修改level</button> -->
+    <h2>doubleCounter: {{ $store.getters.doubleCounter }}</h2>
+    <h2>friendsTotalAge: {{ $store.getters.totalAge }}</h2>
+    <h2>message: {{ $store.getters.message }}</h2>
+
+    <!-- 根据id获取某一个朋友的信息 -->
+    <h2>id-111的朋友信息: {{ $store.getters.getFriendById(111) }}</h2>
+    <h2>id-112的朋友信息: {{ $store.getters.getFriendById(112) }}</h2>
+  </div>
+</template>
+
+<script>
+  export default {
+    computed: {
+    }
+  }
+</script>
+
+<script setup>
+
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+```js
+import { createStore } from 'vuex'
+import { CHANGE_INFO } from './mutation_types'
+
+const store = createStore({
+  state: () => ({
+    counter: 100,
+    name: "coderwhy",
+    level: 100,
+    avatarURL: "http://xxxxxx",
+    friends: [
+      { id: 111, name: "why", age: 20 },
+      { id: 112, name: "kobe", age: 30 },
+      { id: 113, name: "james", age: 25 }
+    ]
+  }),
+  getters: {
+    // 1.基本使用
+    doubleCounter(state) {
+      return state.counter * 2
+    },
+    totalAge(state) {
+      return state.friends.reduce((preValue, item) => {
+        return preValue + item.age
+      }, 0)
+    },
+    // 2.在该getters属性中, 获取其他的getters
+    message(state, getters) {
+      return `name:${state.name} level:${state.level} friendTotalAge:${getters.totalAge}`
+    },
+    // 3.getters是可以返回一个函数的, 调用这个函数可以传入参数(了解)
+    getFriendById(state) {
+      return function(id) {
+        const friend = state.friends.find(item => item.id === id)
+        return friend
+      }
+    }
+  },
+  mutations: {
+    increment(state) {
+      state.counter++
+    },
+    changeName(state, payload) {
+      state.name = payload
+    },
+    incrementLevel(state) {
+      state.level++
+    },
+    [CHANGE_INFO](state, newInfo) {
+      state.level = newInfo.level
+      state.name = newInfo.name
+
+      // 重要的原则: 不要在mutation方法中执行异步操作
+      // fetch("xxxx").then(res => {
+      //   res.json().then(res => {
+      //     state.name = res.name
+      //   })
+      // })
+    }
+  }
+})
+
+export default store
+
+```
+
+#### 3.2 mapGetters
+
+```vue
+<template>
+  <div class="app">
+    <button @click="changeAge">修改name</button>
+
+    <h2>doubleCounter: {{ doubleCounter }}</h2>
+    <h2>friendsTotalAge: {{ totalAge }}</h2>
+    <h2>message: {{ message }}</h2>
+
+    <!-- 根据id获取某一个朋友的信息 -->
+    <h2>id-111的朋友信息: {{ getFriendById(111) }}</h2>
+    <h2>id-112的朋友信息: {{ getFriendById(112) }}</h2>
+  </div>
+</template>
+
+<script>
+  import { mapGetters } from 'vuex'
+
+  export default {
+    computed: {
+      ...mapGetters(["doubleCounter", "totalAge"]),
+      ...mapGetters(["getFriendById"])
+    }
+  }
+</script>
+
+<script setup>
+
+  import { computed, toRefs } from 'vue';
+  import { mapGetters, useStore } from 'vuex'
+
+  const store = useStore()
+
+  // 1.使用mapGetters
+  // const { message: messageFn } = mapGetters(["message"])
+  // const message = computed(messageFn.bind({ $store: store }))
+
+  // （推荐）2.直接解构, 并且包裹成ref，不使用mapGetters
+  // const { message } = toRefs(store.getters)
+
+  // 3.针对某一个getters属性使用computed
+  const message = computed(() => store.getters.message)
+
+  function changeAge() {
+    store.state.name = "kobe"
+  }
+
+</script>
+
+<style scoped>
+</style>
+
+```
+
+###  4.核心概念Mutations
+
+修改state的唯一方法是提交 mutation
+
+#### 4.1 基本使用
+
+```js
+mutations: {
+    increment(state) {
+      state.counter++
+    },
+    changeName(state, payload) {//除了state外，还可接收其他的参数
+      state.name = payload
+    },
+    incrementLevel(state) {
+      state.level++
+    }
+      // 重要的原则: 不要在mutation方法中执行异步操作
+      // fetch("xxxx").then(res => {
+      //   res.json().then(res => {
+      //     state.name = res.name
+      //   })
+      // })
+    //这是因为devtool工具会记录mutation的日记；
+    //每一条mutation被记录，devtools都需要捕捉到前一状态和后一状态的快照；
+    //但是在mutation中执行异步操作，就无法追踪到数据的变化；
+    }
+  }
+```
+
+```vue
+<script>
+
+  import { CHANGE_INFO } from "@/store/mutation_types"
+
+  export default {
+    computed: {
+    },
+    methods: {
+      changeName() {
+        // this.$store.state.name = "李银河"
+        this.$store.commit("changeName", "王小波")
+      },
+      incrementLevel() {
+        this.$store.commit("incrementLevel")
+      },
+      changeInfo() {
+        this.$store.commit(CHANGE_INFO, {
+          name: "王二",
+          level: 200
+        })
+      }
+    }
+  }
+</script>
+```
+
+#### 4.2 mapMutations
+
+```vue
+<template>
+  <div class="app">
+    <button @click="changeName('王小波')">修改name</button>
+    <button @click="incrementLevel">递增level</button>
+    <button @click="changeInfo({ name: '王二', level: 200 })">修改info</button>
+    <h2>Store Name: {{ $store.state.name }}</h2>
+    <h2>Store Level: {{ $store.state.level }}</h2>
+  </div>
+</template>
+
+<script>
+  import { mapMutations } from 'vuex'
+  import { CHANGE_INFO } from "@/store/mutation_types"
+
+  export default {
+    computed: {
+    },
+    methods: {
+      btnClick() {
+        console.log("btnClick")
+      },
+      // ...mapMutations(["changeName", "incrementLevel", CHANGE_INFO])
+    }
+  }
+</script>
+
+<script setup>
+
+  import { mapMutations, useStore } from 'vuex'
+  import { CHANGE_INFO } from "@/store/mutation_types"
+
+  const store = useStore()
+
+  // 1.手动的映射和绑定
+  const mutations = mapMutations(["changeName", "incrementLevel", CHANGE_INFO])
+  const newMutations = {}
+  Object.keys(mutations).forEach(key => {
+    newMutations[key] = mutations[key].bind({ $store: store })
+  })
+  const { changeName, incrementLevel, changeInfo } = newMutations
+
+</script>
+
+<style scoped>
+</style>
+
+```
+
+### 5.核心概念Actions
+
+#### 5.1基本使用
+实操中基本都是通过网络请求获取数据，网络请求相关的代码放在actions里面
+
+**Action类似于mutation，不同在于：**
+
+- Action提交的是mutation，而不是直接变更状态；
+- Action可以包含任意异步操作；
+
+**这里有一个非常重要的参数context：**
+context是一个和store实例均有相同方法和属性的context对象；所以我们可以从其中获取到commit方法来提交一个mutation，或者通过 context.state 和 context.getters 来获取 state 和getters；
+
+如何使用action呢？进行action的分发： 分发使用的是 store 上的dispatch函数；
+
+```vue
+<template>
+  <div class="home">
+    <h2>当前计数: {{ $store.state.counter }}</h2>
+    <button @click="counterBtnClick">发起action修改counter</button>
+    <h2>name: {{ $store.state.name }}</h2>
+    <button @click="nameBtnClick">发起action修改name</button>
+  </div>
+</template>
+
+<script>
+
+  export default {
+    methods: {
+      counterBtnClick() {
+        this.$store.dispatch("incrementAction")
+      },
+      nameBtnClick() {
+        this.$store.dispatch("changeNameAction", "aaa")
+      }
+    }
+  }
+</script>
+
+<script setup>
+
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+```js
+actions: {
+    incrementAction(context) {
+      // console.log(context.commit) // 用于提交mutation
+      // console.log(context.getters) // getters
+      // console.log(context.state) // state
+      context.commit("increment")
+    },
+    changeNameAction(context, payload) {
+      context.commit("changeName", payload)
+    },
+    // fetchHomeMultidataAction(context) {
+    //   // 1.返回Promise, 给Promise设置then
+    //   // fetch("http://123.207.32.32:8000/home/multidata").then(res => {
+    //   //   res.json().then(data => {
+    //   //     console.log(data)
+    //   //   })
+    //   // })
+      
+    //   // 2.Promise链式调用
+    //   // fetch("http://123.207.32.32:8000/home/multidata").then(res => {
+    //   //   return res.json()
+    //   // }).then(data => {
+    //   //   console.log(data)
+    //   // })
+    //   return new Promise(async (resolve, reject) => {
+    //     // 3.await/async
+    //     const res = await fetch("http://123.207.32.32:8000/home/multidata")
+    //     const data = await res.json()
+        
+    //     // 修改state数据
+    //     context.commit("changeBanners", data.data.banner.list)
+    //     context.commit("changeRecommends", data.data.recommend.list)
+
+    //     resolve("aaaaa")
+    //   })
+    // }
+  },
+```
+
+#### 5.2 actions的异步操作
+
+```vue
+<template>
+  <div class="home">
+    <h2>Home Page</h2>
+    <ul>
+      <template v-for="item in $store.state.banners" :key="item.acm">
+        <li>{{ item.title }}</li>
+      </template>
+    </ul>
+  </div>
+</template>
+
+<script>
+</script>
+
+<script setup>
+
+  import { useStore } from 'vuex'
+
+  // 告诉Vuex发起网络请求
+  const store = useStore()
+  store.dispatch("fetchHomeMultidataAction").then(res => {
+    console.log("home中的then被回调:", res)
+  })
+
+</script>
+
+
+<style scoped>
+</style>
+```
+
+```js
+    async fetchHomeMultidataAction(context) {
+        const res = await fetch("http://123.207.32.32:8000/home/multidata")
+        const data = await res.json()        
+      })
+    }
+```
+
+### 6.module的基本使用
+
+由于使用单一状态树，应用的所有状态会集中到一个比较大的对象，当应用变得非常复杂时，store 对象就有可能变得相当臃
+肿；
+为了解决以上问题，Vuex 允许我们将 store 分割成模块（module）；
+每个模块拥有自己的 state、mutation、action、getter、甚至是嵌套子模块
+![img](/images/blog/2022/module.png)
+
+```vue
+<template>
+  <div class="home">
+    <h2>Home Page</h2>
+    <!-- 1.使用state时, 是需要state.moduleName.xxx -->
+    <h2>Counter模块的counter: {{ $store.state.counter.count }}</h2>
+    <!-- 2.使用getters时, 是直接getters.xxx -->
+    <h2>Counter模块的doubleCounter: {{ $store.getters.doubleCount }}</h2>
+
+    <button @click="incrementCount">count模块+1</button>
+  </div>
+</template>
+
+<script>
+</script>
+
+<script setup>
+
+  import { useStore } from 'vuex'
+
+  // 告诉Vuex发起网络请求
+  const store = useStore()
+  // 派发事件时, 默认也是不需要跟模块名称
+  // 提交mutation时, 默认也是不需要跟模块名称
+  function incrementCount() {
+    store.dispatch("incrementCountAction")
+  }
+
+</script>
+
+
+<style scoped>
+</style>
+
+```
+
+## Pinia
+
+**什么是Pinia？和Vuex有什么区别？**
+
+- pinia是一个用于对状态进行管理的库，跨组件跨页面对状态进行共享
+  - 与vuex和redux在作用上并无区别
+- 区别
+  - pinia没有mutations选项，因为mutations的出现解决的问题是让devtools进行状态追踪
+    - 但是随着技术的发展，pinia已经解决的这个没有mutation依然可以跟踪状态的问题
+  - 我们可以在任意组件中拿到store然后直接修改state中的任意值
+  - 不再需要modules这样的嵌套结构，取而代之的是可以创建一个个store
+    - 想要用时直接拿到store：const homeStore = useHome()，然后直接使用即可
+    - 想要拿到别的store，也是直接拿：const aboutStore = useAbout()，然后用就行
+    - 你可以在一个组件中拿任意数量的store
+    - 除此之外你还可以在某个store中拿另外的store，然后使用store中的任何东西
+    - 比如你想在某个store的某个getter函数中使用其他store的某个getter函数，在当前getter函数中可以这么写：
+      - const aboutStore = useAbout();
+      - aboutStore.某个about中getter函数
+  - 使用上的区别
+    - 我们在vuex中使用某个state时，需要$store.state.xxx
+      - 在pinia中直接拿到store之后store.xxx即可
+    - 我们在vuex中使用某个getter函数时，需要$store.getters.xxx
+      - 在pinia中拿到store后，store.xxx即可
+    - 在vuex中进行异步请求需要派发action函数
+      - 在pinia中拿到store后，直接调用action函数即可
+    - 在getter函数中，第一个参数是state，可以通过这个参数拿state
+      - 除了这个还可以通过this拿到当前的整个store，使用里面state、getter函数或者action函数
+    - 在action函数中，没有固定的参数，如果有参数，也是在调用action函数时传递过来的参数
+      - 只能通过this拿到当前的store，再拿state进行赋值
+
+**Pinia中有哪些核心概念，如何使用这些核心概念？**
+
+- state
+  - state是一个选项，这个选项的值需要是一个函数，函数返回一个对象，对象中存储数据
+  - 在组件中拿到当前的store直接使用即可，store.xxx
+- getters
+  - getters也是一个选项，这个选项的值是一个对象，对象中存储着一个个函数，每个函数可以有一个参数state，通过state可以获取到当前store的state
+  - 除此之外每个函数还可以拿到一个this，这个this就是当前的整个store实例
+  - 通过这个this，可以想用谁就用谁
+  - 在组件中使用也是拿到store直接store.xxx即可
+- actions
+  - 在actions中，主要存放一个个函数，每个函数最主要的工作发送异步请求，获取到数据后直接修改state
+  - 每个action函数并不像getter函数一样，第一个参数是state，它可以没有参数
+  - 需要通过this拿到state然后再修改state中的值
+  - 在组件中拿到store后直接调用即可，store.xxx()
+    - 如果你在此时传递参数，那么就可以在action中拿到参数
+- 没有模块的概念
+  - 在vuex中会有modules的概念
+  - 但是在pinia中没有，想要有相同的概念，只需要多创建结构store即可
+  - store与store之前没有什么必然的联系
+  - 如果你想在某个store中使用另一个store中的内容，只需要拿到那个store使用里面的内容即可，灵活
+
+### 1.安装使用pinia
+
+1.1安装
+
+```
+yarn add pinia
+//or
+npm install pinia
+```
+
+1.2创建一个pinia并且将其传递给应用程序
+`src-stores-index.js`
+
+```js
+import { createPinia } from 'pinia'
+
+const pinia = createPinia()
+
+export default pinia
+```
+
+1.3 mian.js中引入
+
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+import pinia from './stores'
+
+createApp(App).use(pinia).mount('#app')
+```
+
+1.4定义store
+在pinia中可以定义多个store
+例如，在`src-stores-counter.js`中定义关于counter的store
+
+```js
+// 定义关于counter的store
+import { defineStore } from 'pinia'
+//defineStore返回的是一个函数
+const useCounter = defineStore("counter", {
+  state: () => ({
+   
+  }),
+  getters: {
+   
+  },
+  actions: {
+   )
+
+export default useCounter
+
+```
+
+1.5在组件中拿到useCounter
+
+```js
+  import useCounter from '@/stores/counter';
+
+  const counterStore = useCounter()
+```
+
+```vue
+<template>
+  <div class="home">
+    <h2>Home View</h2>
+    <h2>count: {{ counterStore.count }}</h2>
+    <h2>count: {{ count }}</h2>
+    <button @click="incrementCount">count+1</button>
+  </div>
+</template>
+
+<script setup>
+  //这两个作用其实是一样的
+  import { toRefs } from 'vue'
+  import { storeToRefs } from 'pinia'
+  
+  import useCounter from '@/stores/counter';
+
+  const counterStore = useCounter()
+
+  // const { count } = toRefs(counterStore)
+  const { count } = storeToRefs(counterStore)
+
+
+  function incrementCount() {
+    counterStore.count++
+  }
+
+</script>
+
+<style scoped>
+</style>
+```
+
+### 2.Store
+
+- Store有三个核心概念：state、getters、actions；
+- 一旦 store 被实例化，你就可以直接在 store 上访问 state、getters 和 actions 中定义的任何属性；
+- 注意Store获取到后不能被解构，不然会失去响应式：为了从 Store 中提取属性同时保持其响应式，需要使用storeToRefs()。
+
+    ```js
+    const { count } = storeToRefs(counterStore)
+    ```
+
+### 3.State
+3.1读取和写入 state：
+默认情况下，您可以通过 store 实例访问状态来直接读取和写入状态；
+
+```js
+const userStore = useUser()
+
+userStore.name = "kobe"
+userStore.age = 20
+```
+
+3.2重置 State：
+可以通过调用 store 上的 $reset() 方法将状态 重置 到其初始值(它内部是有缓存最初状态的)；
+
+```js
+const userStore = useUser()
+userStore.$reset()
+```
+
+3.3更改多个State：
+除了直接用 store.counter++ 修改 store，你还可以调用 $patch 方法；
+它允许应用多个更改；
+
+```js
+    userStore.$patch({
+      name: "james",
+      age: 35
+    })
+```
+
+3.4替换State：
+可以通过将其 $state 属性设置为新对象来替换 Store 的整个状态
+
+```js
+    userStore.$state = {
+      name: "curry",
+      level: 200
+    }
+```
+
+eg
+
+```vue
+<template>
+  <div class="home">
+    <h2>Home View</h2>
+    <h2>name: {{ name }}</h2>
+    <h2>age: {{ age }}</h2>
+    <h2>level: {{ level }}</h2>
+    <button @click="changeState">修改state</button>
+    <button @click="resetState">重置state</button>
+  </div>
+</template>
+
+<script setup>
+  import useUser from '@/stores/user'
+  import { storeToRefs } from 'pinia';
+
+  const userStore = useUser()
+  const { name, age, level } = storeToRefs(userStore)
+
+  function changeState() {
+    // 1.一个个修改状态
+    // userStore.name = "kobe"
+    // userStore.age = 20
+    // userStore.level = 200
+
+    // 2.一次性修改多个状态
+    // userStore.$patch({
+    //   name: "james",
+    //   age: 35
+    // })
+
+    // 3.替换state为新的对象
+    const oldState = userStore.$state
+    userStore.$state = {
+      name: "curry",
+      level: 200
+    }
+    console.log(oldState === userStore.$state)
+  }
+
+  function resetState() {
+    userStore.$reset()
+  }
+
+</script>
+
+<style scoped>
+</style>
+
+
+```
+
+
+
+### 4.Getters
+
+Getters相当于Store的计算属性
+
+4.1定义Getters
+ getters中可以定义接受一个state作为参数的函数；
+
+```js
+ getters: {
+    doubleCounter:(state)=>state.counter*2,
+    doublePlusOne:(state)=>state.counter*2+1,
+    fullname:(state)=>state.firstname+state.lastname
+ }
+```
+
+4.2 定义Getters，用到当前store的Getters：
+我们可以通过this来访问到当前store实例的所有其他访问其他Getters
+
+```js
+doublePlusOne: function () {
+      return this.doubleCounter + 1;
+    },
+```
+
+4.3 定义Getters，用到其他store的Getters
+
+```js
+message: function(state) {
+  const userStore = useUser()  //先拿到
+  return this.fullname + ':' + userStore.nickname
+}
+```
+
+4.4 Getters也可以返回一个函数，这样就可以接受参数
+
+4.5 访问Getters
+
+```vue
+<script setup>
+  import useCounter from '@/stores/counter';
+
+
+  const counterStore = useCounter()
+  console.log(counterStore.doubleCounter);
+  console.log(counterStore.fullname);
+</script>
+```
+
+eg
+
+
+`counter.js`
+
+```js
+// 定义关于counter的store
+import { defineStore } from 'pinia'
+import useUser from './user'
+
+const useCounter = defineStore("counter", {
+  state: () => ({
+    count: 99,
+    friends: [
+      { id: 111, name: "why" },
+      { id: 112, name: "kobe" },
+      { id: 113, name: "james" },
+    ]
+  }),
+  getters: {
+    // 1.基本使用
+    doubleCount(state) {
+      return state.count * 2
+    },
+    // 2.一个getter引入另外一个getter
+    doubleCountAddOne() {
+      // this是store实例
+      return this.doubleCount + 1
+    },
+    // 3.getters也支持返回一个函数
+    getFriendById(state) {
+      return function(id) {
+        for (let i = 0; i < state.friends.length; i++) {
+          const friend = state.friends[i]
+          if (friend.id === id) {
+            return friend
+          }
+        }
+      }
+    },
+    // 4.getters中用到别的store中的数据
+    showMessage(state) {
+      // 1.获取user信息
+      const userStore = useUser()
+
+      // 2.获取自己的信息
+
+      // 3.拼接信息
+      return `name:${userStore.name}-count:${state.count}`
+    }
+  },
+  actions: {
+    increment() {
+      this.count++
+    },
+    incrementNum(num) {
+      this.count += num
+    }
+  }
+})
+
+export default useCounter
+
+```
+
+```vue
+<template>
+  <div class="home">
+    <h2>Home View</h2>
+    <h2>doubleCount: {{ counterStore.doubleCount }}</h2>
+    <h2>doubleCountAddOne: {{ counterStore.doubleCountAddOne }}</h2>
+    <h2>friend-111: {{ counterStore.getFriendById(111) }}</h2>
+    <h2>friend-112: {{ counterStore.getFriendById(112) }}</h2>
+    <h2>showMessage: {{ counterStore.showMessage }}</h2>
+    <button @click="changeState">修改state</button>
+    <button @click="resetState">重置state</button>
+  </div>
+</template>
+
+<script setup>
+  import useCounter from '@/stores/counter';
+
+  const counterStore = useCounter()
+
+</script>
+
+<style scoped>
+</style>
+```
+
+### 5.Actions
+Actions 相当于组件中的 methods。并且Actions中是支持异步操作的，我们可以编写异步函数，在函数中使用await
+![img](/images/blog/2022/action.png)
+
+eg
+`home.js`
+
+```js
+import { defineStore } from 'pinia'
+
+const useHome = defineStore("home", {
+  state: () => ({
+    banners: [],
+    recommends: []
+  }),
+  actions: {
+    async fetchHomeMultidata() {
+      const res = await fetch("http://123.207.32.32:8000/home/multidata")
+      const data = await res.json()
+
+      this.banners = data.data.banner.list
+      this.recommends = data.data.recommend.list
+      
+      // return new Promise(async (resolve, reject) => {
+      //   const res = await fetch("http://123.207.32.32:8000/home/multidata")
+      //   const data = await res.json()
+
+      //   this.banners = data.data.banner.list
+      //   this.recommends = data.data.recommend.list
+
+      //   resolve("bbb")
+      // })
+    }
+  }
+})
+
+export default useHome
+
+```
+
+## Axios
+
+https://blog.csdn.net/qq_39765048/article/details/117688019
+
+### 1.前提补充 [AJAX](https://blog.csdn.net/Oriental_/article/details/104863762)
+
+AJAX 的两个主要功能允许您执行以下操作：
+
+- 在不重新加载页面的情况下向服务器发出请求
+- 接收和处理来自服务器的数据
+
+### 2.axios请求方式
+支持多种请求方式:
+- axios(config)
+- axios.request(config)
+- axios.get(url[, config])
+- axios.delete(url[, config])
+- axios.head(url[, config])
+- axios.post(url[, data[, config]])
+- axios.put(url[, data[, config]])
+- axios.patch(url[, data[, config]])
+有时候, 我们可能需求同时发送两个请求
+- 使用axios.all, 可以放入多个请求的数组.axios.all([]) 返回的结果是一个数组，使用 axios.spread 可将数组 [res1,res2] 展开为 res1, res2
+
+常见的配置选项
+- 请求地址
+  url: '/user',
+- 请求类型
+  method: 'get',
+- 请根路径
+  baseURL: 'http://www.mt.com/api',
+- 请求前的数据处理
+  transformRequest:[function(data){}],
+- 请求后的数据处理
+  transformResponse: [function(data){}],
+- 自定义的请求头
+  headers:{'x-Requested-With':'XMLHttpRequest'},
+- URL查询对象
+  params:{ id: 12 },
+- 查询对象序列化函数
+  paramsSerializer: function(params){ }
+- request body
+  data: { key: 'aa'},
+- 超时设置
+  timeout: 1000,
+
+```js
+// 1.发送request请求
+// axios.request({
+//   url: "http://123.207.32.32:8000/home/multidata",
+//   method: "get"
+// }).then(res => {
+//   console.log("res:", res.data)
+// })
+
+// 2.发送get请求
+// axios.get(`http://123.207.32.32:9001/lyric?id=500665346`).then(res => {
+//   console.log("res:", res.data.lrc)
+// })
+// axios.get("http://123.207.32.32:9001/lyric", {
+//   params: {
+//     id: 500665346
+//   }
+// }).then(res => {
+//   console.log("res:", res.data.lrc)
+// })
+
+
+// 3.发送post请求
+// axios.post("http://123.207.32.32:1888/02_param/postjson", {
+//   name: "coderwhy",
+//   password: 123456
+// }).then(res => {
+//   console.log("res", res.data)
+// })
+
+axios.post("http://123.207.32.32:1888/02_param/postjson", {
+  data: {
+    name: "coderwhy",
+    password: 123456
+  }
+}).then(res => {
+  console.log("res", res.data)
+})
+
+
+```
+
+```js
+// 1.baseURL
+const baseURL = "http://123.207.32.32:8000"
+
+// 给axios实例配置公共的基础配置
+axios.defaults.baseURL = baseURL
+axios.defaults.timeout = 10000
+axios.defaults.headers = {}
+
+// 1.1.get: /home/multidata
+axios.get("/home/multidata").then(res => {
+  console.log("res:", res.data)
+})
+
+// 1.2.get: /home/data
+
+// 2.axios发送多个请求
+// Promise.all
+axios.all([
+  axios.get("/home/multidata"),
+  axios.get("http://123.207.32.32:9001/lyric?id=500665346")
+]).then(res => {
+  console.log("res:", res)
+})
+
+```
+
+
+
+### 3.axios的创建实例
+
+为什么要创建axios的实例呢?
+当我们从axios模块中导入对象时, 使用的实例是默认的实例；当给该实例设置一些默认配置时, 这些配置就被固定下来了.但是后续开发中, 某些配置可能会不太一样；比如某些请求需要使用特定的baseURL或者timeout等.这个时候, 我们就可以创建新的实例, 并且传入属于该实例的配置信息.
+
+```js
+import axios from 'axios'
+
+// axios默认库提供给我们的实例对象
+axios.get("http://123.207.32.32:9001/lyric?id=500665346")
+
+// 创建其他的实例发送网络请求
+const instance1 = axios.create({
+  baseURL: "http://123.207.32.32:9001",
+  timeout: 6000,
+  headers: {}
+})
+
+instance1.get("/lyric", {
+  params: {
+    id: 500665346
+  }
+}).then(res => {
+  console.log("res:", res.data)
+})
+
+const instance2 = axios.create({
+  baseURL: "http://123.207.32.32:8000",
+  timeout: 10000,
+  headers: {}
+})
+```
+
+### 4.请求和响应拦截器
+
+拦截器：在请求或响应被处理前拦截它们，并实现自己想要的内容
+
+```js
+
+// 对实例配置拦截器
+axios.interceptors.request.use((config) => {
+  console.log("请求成功的拦截")
+  // 1.开始loading的动画
+  // 2.对原来的配置进行一些修改
+  // 2.1. header
+  // 2.2. 认证登录: token/cookie
+  // 2.3. 请求参数进行某些转化
+
+  return config
+}, (err) => {
+  console.log("请求失败的拦截")
+  return err
+})
+
+axios.interceptors.response.use((res) => {
+  console.log("响应成功的拦截")
+
+  // 1.结束loading的动画
+
+  // 2.对数据进行转化, 再返回数据
+  return res.data
+}, (err) => {
+  console.log("响应失败的拦截:", err)
+  return err
+})
+
+axios.get("http://123.207.32.32:9001/lyric?id=500665346").then(res => {
+  console.log("res:", res)
+}).catch(err => {
+  console.log("err:", err)
+})
+```
+
+5.axios的封装优势
+
+![vue项目生成的两种方式](/images/blog/2022/axios的封装优势.png)
