@@ -21,13 +21,13 @@ this在全局作用于下指向window
 
 ### 一、绑定规则
 #### 1.默认绑定
-如果包含this 引用的函数是独立函数，则该函数绑定到全局对象。
+如果包含this 引用的函数是独立函数，则该函数绑定到全局对象。（严格模式下this是undefined）
 ```js
 // 1.案例一:
 function foo() {
   console.log(this)
 }
-//window
+//window（严格模式下是undefined）
 ```
 ```js
 // 2.案例二:
@@ -49,19 +49,51 @@ foo3()
 //window
 ```
 ```js
-// 3.案例三:
 var obj = {
-  name: "why",
-  foo: function() {
-    console.log(this)
+    name: "why",
+    foo: function() {
+      console.log(this)
+    }
+  }
+  
+  var bar = obj.foo
+  bar() // window  因为这里bar已经是独立函数了
+
+  console.log(obj.foo());//undefined   因为这里foo还是类内部的函数
+```
+另外，类内部的函数，this指向undefined
+
+```js
+var person = {
+    fullName: function () {
+      var calcFullName = function () {
+        return this.firstName + ' ' + this.lastName
+      }
+      return calcFullName();
+    }
+  }
+  person.firstName = 'Amitai';
+  person.lastName = 'Barnea';
+  console.log(person.fullName()); // Undefined!!!
+```
+
+同样地
+
+```js
+var person = {
+  fullName: function (cb) {
+    $.get('api/getStatus')
+    .then(function(data) {
+      this.status = data;
+    })
   }
 }
-
-var bar = obj.foo
-bar() 
-// window
 ```
+
+It will not work
+
 #### 2.隐式绑定(谁调用，this就指向谁)
+
 如果是通过对象调用，则this指向该对象。也就是 object.fn() 则this指向该object
 
 简而言之，当你使用点表示法调用函数时，this会隐式绑定到调用函数的对象。
@@ -97,9 +129,10 @@ obj2.bar()
 //是obj2调用的，所以this指向obj2
 ```
 #### 3.显示绑定
-如果我们想强制一个函数使用一个对象作为它的上下文 而不在对象上放置一个属性函数引用呢？
-有两种实用方法来实现这一点：call()和apply().
-要将函数调用显式绑定到上下文，您只需调用该call()或者apply绑定并将上下文对象作为参数传递。 
+
+那么我们如何在函数上显式设置“this”呢？call、apply 和 bind 方法为我们做这件事。
+
+call 方法接受“this”将引用的对象以及函数中定义的任何其他参数。apply 方法在定义函数时接受将引用的对象“this”和包含参数引用的数组。
 
 ```js
 function foo() {
@@ -122,7 +155,7 @@ sum.call("call", 20, 30, 40)//90 [String: 'call']
 sum.apply("apply", [20, 30, 40])//90 [String: 'apply']
 ```
 
-如果我们希望一个函数总是显示的绑定到一个对象上，可以用bind函数
+bind 方法与 call 和 apply 的不同之处在于，bind 方法将一个对象附加到这个函数上，因此每次调用该函数时，它都会引用绑定的对象。
 ```js
 var obj={
 name:'why'
@@ -209,3 +242,5 @@ obj.getData()
 ```
 为什么在setTimeout的回调函数中可以直接使用this呢？
 因为箭头函数并不绑定this对象，那么this引用就会从上层作用域中找到对应的this
+
+补充：在类里面的方法默认就是在严格模式下的

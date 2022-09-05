@@ -331,7 +331,7 @@ Vue 事件绑定如何传递参数？如何传递 event 参数？
 - prevent - 调用 event.preventDefault()。
 - capture - 添加事件侦听器时使用 capture 模式。
 - self - 只当事件是从侦听器绑定的元素本身触发时才触发回调。
-- {keyAlias} - 仅当事件是从特定键触发时才触发回调。
+- xxxxxxxxxx import { onMounted, onUnmounted, ref } from "vue";import { throttle } from "lodash";​export default function useScroll() {  const isReachBottom = ref(false)​  const clientHeight = ref(0)  const scrollTop = ref(0)  const scrollHeight = ref(0) // 获取各种高度(客户端  上滑高度   滑块内容总高度)  const scrollListenerHandler = throttle(() => {    clientHeight.value = document.documentElement.clientHeight    scrollTop.value = document.documentElement.scrollTop    scrollHeight.value = document.documentElement.scrollHeight​    if (clientHeight.value + scrollTop.value >= scrollHeight.value) {      // 滚动到底部触发      // console.log('gundao dibu l')      isReachBottom.value = true    }  }, 150)  // 监听事件  onMounted(() => {    window.addEventListener('scroll', scrollListenerHandler)  })  //移除事件  onUnmounted(() => {    window.removeEventListener('scroll', scrollListenerHandler)  })​  return { isReachBottom, clientHeight, scrollTop, scrollHeight }}js
 - once - 只触发一次回调。
 - left - 只当点击鼠标左键时触发。
 - right - 只当点击鼠标右键时触发。

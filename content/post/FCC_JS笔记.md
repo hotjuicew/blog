@@ -702,6 +702,9 @@ let simpleArray = ['one', 2, 'three', true, false, undefined, null];
 console.log(simpleArray.length);
 ```
 调用 `console.log` 显示 7。
+
+#### Array.prototype.splice()
+
 2.splice() 可以让我们从数组中的**任意位置连续**删除**任意数量**的元素。
 返回值是包含**已删除元素**的数组。
 splice() 最多可以接受 3 个参数
@@ -716,11 +719,30 @@ array.splice(2, 2);
 `splice()` 不仅会修改调用该方法的数组，还会返回一个包含被移除元素的数组
 3.splice()替换元素
 第三个参数可以是一个或多个元素，这些元素会被添加到删除位置。 这样，我们能够便捷地将数组中的一个或多个连续元素换成其他的元素。
+
 4. 数组的slice()方法 。 它提取数组中的元素，将其作为一个新的数组返回，不改变原数组
-slice() 只接收 2 个输入参数：第一个是开始提取元素的位置（索引），第二个是提取元素的结束位置（索引）。左闭右开。
-字符串的slice()方法类似。它提取字符串的一部分并将其作为新字符串返回
+    slice() 只接收 2 个输入参数：第一个是开始提取元素的位置（索引），第二个是提取元素的结束位置（索引）。左闭右开。
+    字符串的slice()方法类似。它提取字符串的一部分并将其作为新字符串返回
+
+  **用 splice 方法删除 JavaScript Array 中的特定值的元素**
+
+  如果知道想要从数组中删除的值，也可以用 `splice` 方法。但是也要先获取目标元素的索引，然后用根据索引来删除该元素
+
+  ```js
+  var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+  
+  for( var i = 0; i < array.length-1; i++){ 
+     if ( array[i] === 5) {
+       arr.splice(i, 1); 
+         i--
+     }
+  }
+  
+  //=> [1, 2, 3, 4, 6, 7, 8, 9, 0]
+  ```
 
 5.使用展开运算符...复制数组
+
 ```js
 let thisArray = [true, true, undefined, false, null];
 let thatArray = [...thisArray];
@@ -982,8 +1004,8 @@ function nonMutatingSort(arr) {
 }
 ```
 
-
 11.
+
 #### String.prototype.split()
 该方法用于把一个字符串分割成字符串数组。 参数separator可以是正则表达式
 提示： 如果把空字符串 ("") 用作 separator，那么 stringObject 中的每个字符之间都会被分割。
@@ -1702,28 +1724,66 @@ console.log(filteredList);
 
  将 concat 方法与 push 方法做比较。 push 将元素添加到调用它的数组的末尾，这样会改变该数组。
 7.
+
 #### Array.prototype.reduce()
+
+```js
+let 结果 = 数组.reduct(累加器, 初始化值)
+//累加器
+(累加结果, 当前值, 当前索引)=>{
+
+	return 处理结果
+}
+```
+
 reduce()方法是 JavaScript 所有数组操作中最常用的方法。 几乎可以用reduce方法解决所有数组处理问题。reduce方法是处理数组更通用的方式，而且filter和map方法都可以当作是reduce的特殊实现。 
 `array.reduce(function(total, currentValue, currentIndex, arr), initialValue)`
+
 该方法接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值。
 第一次运行回调时没有“先前计算的返回值”。如果提供，则可以使用初始值代替它。否则，将索引 0 处的数组元素用作初始值，并从下一个元素（索引 1 而不是索引 0）开始迭代。
 
 回调函数function(total,currentValue, index,arr)接受四个参数。 第一个参数是初始值, 或者计算结束后的**返回值**。第二个参数是当前正在处理的数组**元素**。第三个参数是当前数组元素的索引。第四个参数是当前数组元素所在的数组。
 除了回调函数，reduce 还有一个额外的参数做为叠加器的初始值。 如果没有第二个参数，会跳过第一次迭代，第二次迭代给叠加器传入数组的第一个元素。
 
-见下面的例子，给 `users` 数组使用 `reduce` 方法，返回所有用户数组的和。 为了简化，例子仅使用了回调函数的第一个参数和第二个参数。
+累加和
 
 ```js
-const users = [
-  { name: 'John', age: 34 },
-  { name: 'Amy', age: 20 },
-  { name: 'camperCat', age: 10 }
-];
+// reduce 案例1：累加和
+let arr = [1,2,3,4,5]
 
-const sumOfAges = users.reduce((sum, user) => sum + user.age, 0);
-console.log(sumOfAges);
+let s = arr.reduce( (sum,current,index)=>{
+
+    return sum + current
+} , 0)
+
+
+console.info(s)
 ```
+
+对象数组的累加和
+
+```js
+//案例2：对象数组的累加和
+let arr = [
+    {
+        name: 'jack',
+        count: 10
+    },
+    {
+        name: 'rose',
+        count: 20
+    }
+]
+let s = arr.reduce((sum,current,index)=>{
+    return sum + current.count
+},0);
+
+
+console.info(s)
+```
+
 题目：watchList 是包含一些电影信息的对象。 使用 reduce 查找由 Christopher Nolan 导演的电影的 IMDB 评级平均值。 回想一下之前的挑战，如何 filter 数据，以及使用 map 来获取你想要的数据。 您可能需要创建其他变量，并从 getRating 函数返回平均评分。 请注意，评级在对象中是字符串，需要将其转换为数字再用于数学运算。
+
 ```js
 // 全局变量
 const watchList = [
@@ -1876,10 +1936,12 @@ console.log(squaredIntegers);
 
 9.
 
-#### Array.prototype.join()
+#### Array.prototype.join()  数组转字符
 `array.join(separator)`
 该方法把数组中的所有元素转换为一个字符串
 元素是通过指定的分隔符(可选。如果省略该参数，则使用逗号作为分隔符。)进行分隔的。
+
+`.join('')`数组转字符
 
 举个例子：
 
@@ -1889,6 +1951,8 @@ const str = arr.join(" ");
 ```
 
 `str` 的值应该是字符串 `Hello World`。
+
+
 
 10.解决一个实际问题。
 许多内容管理站点（CMS）为了让添加书签更简单，会将帖子的标题添加到 URL 上。 举个例子，如果你写了一篇标题为 `Stop Using Reduce` 的帖子，URL很可能会包含标题字符串的某种形式 (如：`.../stop-using-reduce`)。 你可能已经在 freeCodeCamp 网站上注意到了这一点。
@@ -1978,7 +2042,26 @@ const partialFn = impartial.bind(this, 1, 2);
 partialFn(10); // 13
 ```
 
+#### 字符串转数组
+
+```js
+// 第一种 split拆分
+"abc".split('')
+ ==> ["a","b","c"]
+// 第二种 [...]
+[..."abc"]
+ ==> ["a","b","c"]
+ Array.from("abc")
+==> ["a","b","c"]
+```
+
+#### 字符串转数组
+
+`toString()`
+
+
 ## jQuery
+
 1.`<body>`里面添加`<script>`，在 script 标签中添加代码  `$(document).ready(function(){});`
 
 2.所有的 jQuery 函数都以 `$` 开头，jQuery 通常选取并操作带有选择器（selector）的 HTML 标签。
@@ -2154,3 +2237,2138 @@ $(".target:odd").addClass("animated shake");
 
 
 
+# LeetCode
+
+### 2.两数之和
+
+#### Map.prototype.get()
+
+`myMap.get(key);` 方法返回某个 `Map` 对象中的一个指定元素。
+
+思路: 一次循环，使用Map进行记录
+通过Map，在循环的时候进行查找我们将Map的Key定义为nums[i]，Value定义为i。
+那么，每次循环到一个数的时候，我们就可以在Map中查找是否存在key === target - nums[i]，如果存在则可以直接返回对应的两个下标，否则，将当前的值记入到HashMap中。
+
+```js
+var twoSum = function(nums, target) {
+    const map = new Map();
+    for(let i = 0, len = nums.length;i < len;i++) {
+        if(map.has(target - nums[i])) {
+            return [map.get(target - nums[i]), i];
+        }
+        map.set(nums[i], i);//把要找的数放到map里，key为值，val为索引
+    }
+    return [];
+};
+
+```
+
+
+
+### 3. 无重复字符的最长子串
+
+####  Set.prototype.has()
+
+**has()** 方法返回一个布尔值来指示对应的值 value 是否存在 Set 对象中。
+
+```js
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLongestSubstring = function (s) {
+  // 定义滑动窗口左右指针 l,r 以及字符串长度 n 最终结果 max
+  let l = 0,
+    r = 0,
+    n = s.length,
+    max = 0,
+    // 定义 set 用来记录当前已经出现过的字符，用来作为是否重复出现过的依据
+    set = new Set()
+  // 约束窗口可滑动的范围:右指针不超过字符串长度，左指针不超过右指针
+  while (l <= r && r < n) {
+    // 如果当前字符未记录过：
+    // 1. 比较当前左右两指针间窗口大小和当前max大小，更新max
+    // 2. 记录当前字符到set中
+    // 3. 因为当前仍未发生重复，因此窗口可以继续扩大范围，右指针向右平移
+    if (!set.has(s[r])) {
+      max = Math.max(r - l + 1, max)
+      set.add(s[r])
+      r++
+    } else {
+      // 如果当前字符已经被记录过：
+      // 1. 右指针保持不动
+      // 2. 在set中移除左指针对应的字符 左指针右移缩小窗口大小
+      set.delete(s[l])
+      l++
+    }
+  }
+  return max
+}
+
+```
+
+```js
+//我的
+var lengthOfLongestSubstring = function(s) {
+    let left=0,
+        right=0,
+        max=0,
+    set=new Set()
+    while(left<=right&&right<s.length){
+        while(!set.has(s[right])&&right<s.length){
+            max=Math.max(right-left+1,max)
+            set.add(s[right])
+            right++
+
+        }
+        set.delete(s[left])//别忘了
+        left++
+    }
+    return max
+
+};
+
+```
+
+### 5. 最长回文子串
+
+#### String.prototype.substring()
+
+返回一个字符串在开始索引到结束索引之间的一个子集（左闭右开）
+
+```js
+/**
+ * @param {string} s
+ * @return {string}
+ */
+
+function longestPalindrome(s){
+    let res = '';
+    for (let i = 0; i < s.length; i++) {
+        // 寻找长度为奇数的回文子串(以当前元素向两边扩散)
+        const s1 = palindrome(s, i, i);
+        // 寻找长度为偶数的回文子串(以s[i],s[i + 1])向两边扩散
+        const s2 = palindrome(s, i, i + 1);
+        res = res.length > s1.length ? res : s1;
+        res = res.length > s2.length ? res : s2;
+    }
+    return res;
+}
+
+function palindrome(s, l, r) {
+    // 左右指针，从s[l]和s[r]向两边扩散，找到最长回文串
+    while (l >= 0 && r < s.length && s[l] === s[r]) {
+        l--; r++;
+    }
+    return s.substring(l + 1, r );
+}
+
+```
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestPalindrome = function(s) {
+    let maxStr=''
+    for(let i=0;i<s.length;i++){
+        let s1=Palindrome(s,i,i)
+        let s2=Palindrome(s,i,i+1)
+        maxStr=maxStr.length>s1.length?maxStr:s1
+        maxStr=maxStr.length>s2.length?maxStr:s2
+    }
+    return maxStr
+}
+
+var Palindrome = function(s,l,r) {
+    while(l>=0&&r<s.length&&s[l]===s[r]){
+        l--
+        r++
+    }
+    return s.substring(l+1,r)
+}
+
+```
+
+### 6.Z 字形变换
+
+别人的思路：
+
+- 整体的思路是遍历字符串，遍历过程中将每行都看成新的字符串构成字符串数组
+- 如果 numRows=1 则说明当前字符串即为结果，直接返回
+- 否则整个字符串需要经历，向下向右，向下向右，这样的反复循环过程，设定 down 变量表示是否向下，locloc 变量表示当前字符串数组的下标
+- 如果 down 为 true，则 loc+=1，字符串数组下标向后移动，将当前字符加入当前字符串中
+- 如果 downdown 为 false，则表示向右，则 loc-=1，字符串数组下标向前移动，将当前字符加入当前字符串中
+  时间复杂度：O(n)O(n)，nn为字符串s的长度
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @param {number} numRows
+ * @return {string}
+ */
+var convert = function (s, numRows) {
+    let strs = []
+    for(let i = 0; i< numRows; i++) strs[i] = ""//记得将数组每项初始化为字符串
+    let down = false
+    let rowNum = 0
+    let result=''
+    if(numRows == 1)
+        return s;
+    for (const item of s) {
+        if (rowNum === numRows - 1 || rowNum === 0) {
+            down = !down
+        }
+        if (down === true) {
+            strs[rowNum]+=item
+            rowNum++
+        }
+        if (down === false) {
+            strs[rowNum]+=item
+            rowNum--
+        }
+        
+    }
+    for(const item of strs){
+            result+=item
+        }
+    return result
+};
+
+```
+
+### 7. 整数反转
+
+#### Array.prototype.reverse()
+
+`**reverse()**` 方法将数组中元素的位置颠倒，并返回该数组。数组的第一个元素会变成最后一个，数组的最后一个元素变成第一个。该方法会改变原数组。  但是本题不能用这个函数
+
+#### parseInt() 字符串转换成数字
+
+`parseInt(string[, radix])` 解析一个字符串并返回指定基数的十进制整数，`radix` (可选)是 2-36 之间的整数，表示被解析字符串的基数。
+
+js中取模运算（%）还是和c语言一样，但是/运算结果并不会舍去小数,所以要用parseInt()函数来转化成整数
+
+
+
+```js
+/**
+ * @param {number} x
+ * @return {number}
+ */
+ const reverse=(x)=>{
+    let a,sum=0,max=Math.pow(2,31)-1,min=-max-1
+    if(x>max|| x<min)  return 0
+    while(x!==0){
+        a=x%10
+        x=parseInt(x/10)
+        sum=sum*10+a
+    }
+    if(sum>max || sum<min)  return 0
+    return sum
+}
+
+```
+
+```js
+//我的  搞复杂了qaq
+/**
+ * @param {number} x
+ * @return {number}
+ */
+var reverse = function (x) {
+    let negNum = false
+    let str = []
+    if (x < 0) {
+        x = -x
+        negNum = true
+    }
+    let mo = 10
+    while (x > 0) {
+        str.push(x % mo)
+        x = parseInt(x / mo)
+    }
+    if (negNum === true) {
+        str.unshift('-')
+    }
+    let result = Number(str.join(''))
+    if (result > Math.pow(2, 31) - 1 || result < Math.pow(-2, 31)) return 0;
+    return result
+};
+```
+
+### 8. 字符串转换整数 (atoi)
+
+#### isNaN()
+
+`isNaN()` 函数用来确定一个值是否为NaN
+
+```js
+//mine 利用parseInt就可以满足绝大部分题目的要求
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var myAtoi = function(s) {
+    let result=parseInt(s，10)
+    if (result < Math.pow(-2, 31) || result > Math.pow(2, 31) - 1) {
+        return result < Math.pow(-2, 31) ? Math.pow(-2, 31) : Math.pow(2, 31) - 1;
+    }
+    if(isNaN(result)){
+        return 0
+    }
+    return result
+};
+```
+
+### 9. 回文数
+
+#### toString()   
+
+用于任何东西转字符串
+
+```js
+//我的 转字符串+双指针
+/**
+ * @param {number} x
+ * @return {boolean}
+ */
+var isPalindrome = function (x) {
+    let arr = x.toString().split('')
+    for (let l = 0, r = arr.length - 1; l <= arr.length / 2 && r >= arr.length / 2; l++, r--) {
+        if (arr[l] !== arr[r]) return false
+    }
+    return true
+};
+```
+
+### 11. 盛最多水的容器
+
+这道题要解决的问题是，找寻最大的一组(i,j)，使得Area最大。这道题最粗暴的方法当然是O(n^2)，当然对于medium难度的题目来说，显然不能这么做
+
+思路：用双指针i，j循环height数，i，j对应高度较小的那个先向内移动，不断计算面积，更新最大面积
+
+```js
+var maxArea = function(height) {
+    let max = 0;
+    for (let i = 0, j = height.length - 1; i < j;) {//双指针i，j循环height数组
+      	//i，j较小的那个先向内移动 如果高的指针先移动，那肯定不如当前的面积大
+        const minHeight = height[i] < height[j] ? height[i++] : height[j--];
+        const area = (j - i + 1) * minHeight;//计算面积
+        max = Math.max(max, area);//更新最大面积
+    }
+    return max;
+};
+```
+
+```js
+//mine
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var maxArea = function(height) {
+    let max,minHgt,minus
+for(let l=0,r=height.length-1;l<r;){
+minus=r-l
+minHgt=height[l]<height[r]?height[l++]:height[r--]
+max=max>minHgt*minus?max:minHgt*minus
+}
+return max
+};
+```
+
+### 12.整数转罗马数字
+
+
+
+### 14.最长公共前缀
+
+
+```js
+var longestCommonPrefix = function(strs) {
+    if(strs.length == 0) 
+        return "";
+    let ans = strs[0];//ans初始值为字符串数组的第一个
+    for(let i =1;i<strs.length;i++) {//循环字符串数组
+        let j=0;
+        for(;j<ans.length && j < strs[i].length;j++) {//循环字符，找到第一个不相同的位置
+            if(ans[j] != strs[i][j])
+                break;
+        }
+        ans = ans.substr(0, j);//从0号位置到第一个不相同的位置 截取字符串
+        if(ans === "")
+            return ans;
+    }
+    return ans;
+
+```
+```js
+//我的 暴力做法 不好
+//而且这里不用把字符串转换为数组，直接当二维数组做。字符串底层本质一串字符组成的*只读*字符数组
+/**
+ * @param {string[]} strs
+ * @return {string}
+ */
+var longestCommonPrefix = function(strs) {
+    for(item of strs){
+        item.split('')
+    }
+    let res=''
+    let minLen=999
+    for(let i=0;i<strs.length;i++){
+        minLen=minLen<strs[i].length?minLen:strs[i].length
+    }
+    for(let i=0;i<minLen;i++){
+        let toge=strs[0][i]
+        let target =true
+        for(let j=0;j<strs.length;j++){
+            if(strs[j][i]!==toge){
+                target=false
+                return res
+            }
+        }
+        if(target===true)res+=toge
+    }
+    return res
+};
+```
+
+
+
+### 15. 三数之和
+
+方法一.c=-(a+b): 确定了a和b，那就可以想两数之和一样，在map中寻找-(a+b)，减少一层循环，时间复杂度O(n^2)，空间复杂度O(n)。
+
+方法二.双指针法。排序然后查找
+
+思路：先排序数组，数组长度必须大于3，循环数组，假如当前循环到了i索引，则定义两个指针L = i+1，和R = nums.length-1,如果和sum=nums[i] + nums[L] + nums[R]小于0，则向右移动左指针，如果sum大于0，则左移右指针，如果sum等于0，则正好找到了这3个数，然后在尝试L++,R--，继续寻找中间是否有三个数之和等于0，注意在循环的过程中遇见相同的三个数需要去重。
+复杂度分析：时间复杂度O(n^2)，n为数组的长度。空间复杂度O(logn)，即排序所需要的空间
+
+![img](https://pic.leetcode-cn.com/1632108374-OljZRm-15.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.gif)
+
+```js
+//mine
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var threeSum = function(nums) {
+    nums.sort((a,b)=>a-b)
+    let l,r
+    let result=[]
+    for(let i=0;i<nums.length;i++){
+        l=i+1
+        r=nums.length-1
+        // 如果当前数字大于0，则三数之和一定大于0，所以结束循环
+        if (nums[i]+nums[l]+nums[r]===0>0)return result
+        if(i > 0 && nums[i] === nums[i-1]) continue; // 去重
+        while(l<r){
+            if (nums[i]+nums[l]+nums[r]===0){
+                result.push([nums[i],nums[l],nums[r]])//可以直接这样
+                while (l<r && nums[l] === nums[l+1]) l++; // 去重
+                while (l<r && nums[r] === nums[r-1]) r--; // 去重
+
+            }
+            if(nums[i]+nums[l]+nums[r]>0){
+                r--
+            }else {
+                l++
+            }
+
+        }
+    }
+    return result
+};
+```
+
+### 16. 最接近的三数之和
+
+和上一题很像，排序+双指针
+
+```js
+var threeSumClosest = function (nums, target) {
+    nums.sort((a, b) => a - b)
+    let l, r, min = 999
+    for (let i = 0; i < nums.length; i++) {
+        let smallMin = 999
+        l = i + 1
+        r = nums.length - 1
+        while (l < r) {
+            smallMin = nums[i] + nums[l] + nums[r]
+            if (nums[i] + nums[l] + nums[r] < target) l++
+            else if (nums[i] + nums[l] + nums[r] > target) r--
+            else if (nums[i] + nums[l] + nums[r] === target) return target
+        }
+        min = Math.abs(min - target) < Math.abs(smallMin - target) ? min : smallMin
+    }
+    return min
+};
+```
+
+### 17. 电话号码的字母组合
+
+什么是回溯？回溯是递归的一种形式。（DFS）
+
+通常情况下，你会面临很多选择，你必须从中选择一个。在你做出选择后，你会得到一组新的选项；你得到的选择取决于你做出的选择。这个过程反复进行，直到达到最终状态。如果你做出了一系列正确的选择，你的最终状态就是目标状态；如果你没有，那就不是正确答案了
+
+
+
+```js
+//输入：digits = "23"
+//输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+var letterCombinations = (digits) => {
+    if (digits.length == 0) return [];
+    const res = [];
+    const map = {//建立电话号码和字母的映射关系
+        2: "abc",
+        3: "def",
+        4: "ghi",
+        5: "jkl",
+        6: "mno",
+        7: "pqrs",
+        8: "tuv",
+        9: "wxyz",
+    };
+
+    const dfs = (alreadyStr, i) => {//alreadyStr是已经递归每一层的字符串，i是扫描digits的指针
+        if (i > digits.length - 1) {//边界条件，递归的出口
+            res.push(alreadyStr); //其中一个分支的解推入res
+            return; //结束递归分支，进入另一个分支
+        }
+        const letters = map[digits[i]]; //取出数字对应的字母
+        for (const l of letters) {
+            //进入不同字母的分支
+            dfs(alreadyStr + l, i + 1); //新对应的字符串，i右移，继续递归
+        }
+    };
+    dfs("", 0); // 递归入口，传入空字符串，i初始为0的位置
+    return res;
+};
+
+console.log(letterCombinations("234"))
+```
+
+```js
+//mine
+/**
+ * @param {string} digits
+ * @return {string[]}
+ */
+var letterCombinations = function(digits) {
+    let map={
+        2:'abc',
+        3:'def',
+        4:'ghi',
+        5:'jkl',
+        6:'mno',
+        7:'pqrs',
+        8:'tuv',
+        9:'wxyz'
+    }
+    let res=[]
+    if(digits.length===0)return []
+    //alreadyStr是已经选择了的字符串
+    const dfs= (alreadyStr,i)=>{//i是指向digits每个数字的指针
+        if(i>digits.length-1){
+            res.push(alreadyStr)
+            return
+        }
+        const letters=map[digits[i]]
+        for(let choose of letters){
+            dfs(alreadyStr+choose,i+1)//这里的i+1不能写成i++
+        }
+    }
+
+    dfs('',0)
+    return res;
+};
+```
+
+### 18. 四数之和
+
+在三数之和的基础上再加上一层for循环
+
+### 19.删除链表的倒数第 N 个结点
+
+思路：首先这里我推荐使用虚拟头结点，这样方面处理删除实际头结点的逻辑。新建dummy节点指向head，指针n1，n2指向head，循环n2指针到n的位置，然后在同时移动n1，n2，直到结尾，n1，n2的距离是n，此时n1的位置就是需要删除元素的位置
+
+```js
+//mine
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+var removeNthFromEnd = function(head, n) {
+let dummy=new ListNode()
+dummy.next=head
+let l=dummy
+let r=dummy
+for(let i=0;i<n;i++){//r先后移n位
+    r=r.next
+}
+while(r.next!==null){//同时移动l，r。要删去的点是l.next节点
+    l=l.next
+    r=r.next
+}
+l.next=l.next.next//通过l删除l.next节点
+dummy=dummy.next
+return dummy
+};
+```
+
+### 20. 有效的括号
+
+#### in
+
+如果指定的属性在指定的对象或其原型链中，则**`in` 运算符**返回`true`。`prop in object`
+
+```js
+//mine
+var isValid = function(s) {
+const stack=[]
+const map={
+    '(':')',
+    '[':']',
+    '{':'}'
+}
+let popThing
+for(let item of s){
+    if(item in map){
+        stack.push(item)
+    }else{
+        popThing=stack.pop()
+        if(item!==map[popThing]) return false
+    }
+}
+    if(stack.length>0)return false
+    return true
+};
+```
+
+试着按模块刷题了。。。
+
+## 数组
+
+### 704. 二分查找
+
+#### `>> 1`左移一位
+
+想要在js中实现/2舍去小数的效果只需>>1
+
+定义左右指针
+
+```js
+//mine
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var search = function (nums, target) {
+    let l = 0, r = nums.length - 1
+    let m
+    while (l <= r) {
+        m = (l + r) >> 1
+        if (nums[m] === target) return m
+        nums[m] < target ? l = m + 1 : r = m - 1//注意不能写成m
+    }
+    return -1
+};
+```
+
+### 27. 移除元素
+
+遍历一遍数组,找出与val值相同的数组元素，然后使用splice方法删除。
+
+```js
+//mine
+/**
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+var removeElement = function(nums, val) {
+    let res=nums.length
+for(let i=0;i<nums.length;i++){
+    if(nums[i]===val){
+        nums.splice(i,1)
+        i--//不要忘了这一步
+        res--
+    }
+}
+};
+```
+
+### 977.有序数组的平方
+
+#### Array.prototype.map()
+
+**`map()`** 方法创建一个新数组，这个新数组由原数组中的每个元素都调用一次提供的函数后的返回值组成。
+
+
+
+#### 求幂 (**),它等效于`Math.pow`
+
+```js
+//mine
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var sortedSquares = function (nums) {
+    let res = nums.map(val => val ** 2)
+    return res.sort((a, b) => a - b)
+};
+```
+
+```js
+// 两个指针，l指向头，r指向尾
+// 两头开始遍历，比较平方数，然后从大到小，以此把数据放进新数组中
+var sortedSquares = function(nums) {
+    let [l, r] = [0, nums.length - 1];
+    let temp = [];
+    while (l <= r) {
+        const m = nums[l] ** 2;
+        const n = nums[r] ** 2;
+        if (m > n) {
+            temp.unshift(m);
+            ++l;
+        } else {
+            temp.unshift(n);
+            --r;
+        }
+    }
+    return temp;
+};
+```
+
+### 209.长度最小的子数组
+
+```js
+//mine 暴力解法qaq
+/**
+ * @param {number} target
+ * @param {number[]} nums
+ * @return {number}
+ */
+var minSubArrayLen = function (target, nums) {
+    let l, r
+    let res = Infinity
+    let sum
+    let havFlag = false
+    for (l = 0; l < nums.length; l++) {
+        r = l
+        sum = nums[l]
+        if (sum >= target) return 1
+        while (r < nums.length - 1) {
+            r++
+            sum += nums[r]
+            if (sum >= target) {
+                res = res < r - l + 1 ? res : r - l + 1
+                havFlag = true
+            }
+        }
+    }
+    if (havFlag === false) return 0
+    return res
+};
+console.log(minSubArrayLen(11, [1, 2, 3, 4, 5]))
+```
+
+#### 滑动窗口法
+
+可以用来解决一些查找满足一定条件的连续区间的性质（长度等）的问题。由于区间连续，因此当区间发生变化时，可以通过旧有的计算结果对搜索空间进行剪枝，这样便减少了重复计算，降低了时间复杂度。往往类似于“请找到满足xx的最x的**区间（子串、子数组）**的xx”这类问题都可以使用该方法进行解决。
+
+滑动窗口算法的思路是这样：
+
+1、我们在字符串 S 中使用双指针中的左右指针技巧，初始化 left = right = 0，把索引闭区间 [left, right] 称为一个「窗口」。
+
+2、我们先不断地增加 right 指针扩大窗口 [left, right]，直到窗口中的字符串符合要求（包含了 T 中的所有字符）。
+
+3、此时，我们停止增加 right，转而不断增加 left 指针缩小窗口 [left, right]，直到窗口中的字符串不再符合要求（不包含 T 中的所有字符了）。同时，每次增加 left，我们都要更新一轮结果。
+
+4、重复第 2 和第 3 步，直到 right 到达字符串 S 的尽头。
+
+这个思路其实也不难，第 2 步相当于在寻找一个「可行解」，然后第 3 步在优化这个「可行解」，最终找到最优解。左右指针轮流前进，窗口大小增增减减，窗口不断向右滑动。
+
+
+```js
+var minSubArrayLen = function(target, nums) {
+    const len = nums.length;
+    let l = r = sum = 0, 
+        res = len + 1; //最大的窗口不会超过自身长度
+    while(r < len) {
+        sum += nums[r++];//扩大窗口
+        while(sum >= target) {
+            res = res < r - l ? res : r - l;//更新最小值
+            sum-=nums[l++];//缩小窗口
+        }
+    }
+    return res > len ? 0 : res;
+};
+```
+
+```js
+//mine
+/**
+ * @param {number} target
+ * @param {number[]} nums
+ * @return {number}
+ */
+var minSubArrayLen = function(target, nums) {
+    let l=0,r=0
+    let res=nums.length+1
+    let sum=0
+    for(;r<nums.length;r++){
+        sum+=nums[r]
+        if(sum>=target){
+            res=res<r-l+1?res:r-l+1
+            while(l<=r&&sum>=target){
+                l++
+                sum-=nums[l-1]
+                if(sum>=target)res=res<r-l+1?res:r-l+1
+            }
+        }
+    }
+    if(res===nums.length+1)return 0
+    return res
+};
+
+```
+
+### 904. 水果成篮
+
+#### Array.prototype.includes()
+
+**`includes()`** 方法用来判断一个数组是否包含一个指定的值，根据情况，如果包含则返回 `true`，否则返回 `false`。
+
+#### String.prototype.includes()
+
+**`includes()`** 方法用于判断一个字符串是否包含在另一个字符串中，根据情况返回 true 或 false。
+
+```js
+
+var totalFruit = function(fruits) {
+    let l = 0;//起始指针
+    let maxLen = 0;//窗口的最大长度 其中最多包涵两种水果
+    let n = 0//右指针的结束位置
+    let arr = [fruits[l]]//水果的种类数组
+
+    for(let r = 0; r < fruits.length; r++){//窗口的右指针不断前进
+        if(!arr.includes(fruits[r])){//如果窗口中不包含 进窗口的水果
+            if(arr.length <= 1){//如果只有一种水果
+                arr[1] = fruits[r]//将这种水果加入arr数组
+            }else{//如果有两种水果
+                l = n//更新窗口的左边界
+                arr[0] = fruits[r-1]//更新arr中水果的种类
+                arr[1] = fruits[r]
+            }
+        }
+       
+        if(fruits[r] !== fruits[n]){//如果进来了一种新的类型的水果 更新前一种水果的位置
+            n = r
+        }
+
+        maxLen = Math.max(maxLen,r-l+1)//更新滑动窗口的最大值
+    }
+    return maxLen
+
+};
+```
+
+### 59. 螺旋矩阵 II
+
+用二维数组来实现矩阵
+
+```js
+/**
+ * @param {number} n
+ * @return {number[][]}
+ */
+var generateMatrix = function (n) {
+    let matrix = []
+    for (let i = 0; i < n; i++) {
+        matrix[i] = []
+    }
+    let startX = 0, startY = 0
+    let offset = 1
+    let count = 1
+    let i, j
+    let loop = n >> 1
+    while (loop--) {
+        //每次的开始位置不是固定的，所以用变量表示
+        for (j = startY; j < n - offset; j++) {
+            matrix[startX][j] = count++
+        }
+        for (i = startX; i < n - offset; i++) {
+            matrix[i][j] = count++
+        }
+        for (; j > startY; j--) {
+            matrix[i][j] = count++
+        }
+        for (; i > startX; i--) {
+            matrix[i][j] = count++
+        }
+        startX++;
+        startY++;
+
+        // offset 控制每一圈里每一条边遍历的长度
+        offset += 1;
+    }
+    // 如果n为奇数的话，需要单独给矩阵最中间的位置赋值
+    if (n % 2) {
+        matrix[n >> 1][n >> 1] = count;
+    }
+    return matrix;
+};
+```
+
+## 链表
+
+定义链表
+
+```js
+class ListNode {
+  val;
+  next = null;
+  constructor(value) {
+    this.val = value;
+    this.next = null;
+  }
+}
+```
+
+### 203. 移除链表元素
+
+```js
+//mine
+/**
+ * @param {ListNode} head
+ * @param {number} val
+ * @return {ListNode}
+ */
+var removeElements = function(head, val) {
+    let newHead=new ListNode(0)
+    newHead.next=head
+    let i=newHead
+    while(i.next){
+        if(i.next.val===val){
+            if(i.next.next){
+                i.next=i.next.next
+            }else i.next=null
+
+        }else i=i.next
+    }
+    newHead=newHead.next
+    return newHead
+};
+```
+
+
+
+```js
+
+var removeElements = function(head, val) {
+    const dummyHead = new ListNode(0);//创建dummy节点，将dummy节点的next指向head，temp指向dummy
+    dummyHead.next = head;
+    let temp = dummyHead;
+    while (temp.next !== null) {//当temp的next不为null 不断循环节点
+        if (temp.next.val == val) {
+            temp.next = temp.next.next;//当temp的next值是要删除的 则删除该节点
+        } else {
+            temp = temp.next;//移动temp指针
+        }
+    }
+    return dummyHead.next;
+};
+
+```
+
+### 206. 反转链表
+
+```js
+//mine 不巧妙的方法
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var reverseList = function (head) {
+    if (!head) return head
+    let tmp = head
+    let arr = []
+    while (tmp.next) {
+        arr.push(tmp.val)//最后一个节点还没存放进去
+        tmp = tmp.next
+    }
+    let tmp2 = tmp
+    for (let i = arr.length - 1; i >= 0; i--) {
+        tmp2.next = new ListNode(arr.pop())
+        tmp2 = tmp2.next
+    }
+    return tmp
+};
+```
+
+**双指针迭代**
+首先定义一个cur指针，指向头结点，再定义一个pre指针，初始化为null。
+
+然后就要开始反转了，首先要把 cur->next 节点用tmp指针保存一下，也就是保存一下这个节点。
+
+为什么要保存一下这个节点呢，因为接下来要改变 cur->next 的指向了，将cur->next 指向pre ，此时已经反转了第一个节点了。
+
+接下来，就是循环走如下代码逻辑了，继续移动pre和cur指针。
+
+最后，cur 指针已经指向了null，循环结束，链表也反转完毕了。 此时我们return pre指针就可以了，pre指针就指向了新的头结点。动画演示如下：
+![img](https://tva1.sinaimg.cn/large/008eGmZEly1gnrf1oboupg30gy0c44qp.gif)
+
+```js
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var reverseList = function(head) {
+    let pre=null
+    let cur=new ListNode()
+    cur=head
+    let tmp=cur
+    while(cur){
+       tmp = cur.next;
+       cur.next=pre
+        pre = cur
+        cur=tmp
+    }
+    return pre
+};
+```
+
+### 24. 两两交换链表中的节点
+
+![img](https://code-thinking.cdn.bcebos.com/pics/24.%E4%B8%A4%E4%B8%A4%E4%BA%A4%E6%8D%A2%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B91.png)
+
+```js
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var swapPairs = function (head) {
+  let dummy = new ListNode(0, head), temp = dummy;
+  while (temp.next && temp.next.next) {
+    let r = temp.next.next, l = temp.next;
+    l.next = r.next;
+    r.next = l;
+    temp.next = r;
+    temp = l;
+  }
+  return dummy.next;
+};
+
+```
+
+```js
+//mine
+var swapPairs = function (head) {
+//dummy->dummy2->head
+  let dummy=new ListNode(0)
+  let dummy2=new ListNode(0)
+  dummy.next=dummy2
+  dummy2.next=head
+  let tmp=dummy
+  let l,r
+  while(tmp.next.next&&tmp.next.next.next){
+      l=tmp.next.next
+      r=tmp.next.next.next
+      //交换
+      l.next=r.next
+      r.next=l
+      tmp.next.next=r
+      //tmp移动
+      tmp=tmp.next.next
+  }
+  return dummy.next.next
+};
+
+```
+
+### 面试题 02.07. 链表相交
+
+只要两个指针相等 就跳出循环
+只要它们两个之中的一个为空 就让它们跳回开头
+
+如果有交点 在两个指针分别走过另一个指针“来时的路”期间 一定会相遇——也就是返回相遇的那个点，下方代码中直接返回a了
+如果没交点 在两个指针必定同时走完彼此的路（a链长度+b链长度=b链长度+a链长度）——也就是a(null) === b(null) 返回a(null)
+
+```js
+var getIntersectionNode = function(headA, headB) {
+    let a = headA;
+    let b = headB;
+    if(a === null || b === null){
+        return null;
+    }
+    while(a !== b){
+        a = a===null ? headB : a.next;
+        b = b===null ? headA : b.next;
+    }
+    return a;
+};
+
+```
+
+### 142. 环形链表 II
+
+方法1.哈希表
+思路：遍历链表，将节点加入一个set中，每次判断当前节点是否在set中，如果存在重复的节点，这个节点就是入环节点
+复杂度：时间复杂度O(n)，空间复杂度O(n)
+js：
+
+```js
+var detectCycle = function(head) {
+    const visited = new Set();
+    while (head !== null) {//终止条件，如果没有环 跳出循环
+        if (visited.has(head)) {//如果存在重复的节点，这个节点就是入环节点
+            return head;
+        }
+        visited.add(head);//将节点加入set中
+        head = head.next;
+    }
+    return null;
+};
+```
+
+```js
+//mine
+
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var detectCycle = function(head) {
+    let visited=new Set()
+    let i=new ListNode()
+    i=head
+    while(i!== null){
+        if(visited.has(i)){return i}
+        visited.add(i)
+        i=i.next
+    }
+    return null
+};
+```
+
+## 哈希表
+
+常见的三种哈希结构
+
+当我们想使用哈希法来解决问题的时候，我们一般会选择如下三种数据结构。
+
+- 数组
+
+- set （集合）Set 与数组类似， 只是Set 集合中的元素不重复。
+  **js Set用法补充**
+    1、JS中Set的定义：
+  
+  ```js
+   var set = new Set();
+  ```
+  
+    2、JS中Set的遍历：
+
+   
+  
+  ```js
+   set.forEach(function (element, sameElement, set) {
+            console.log(element);
+        }
+  ```
+  
+    3、JS中Set的操作方法：
+    (1)：数组与Set之间的转换：
+
+    一：数组转Set：
+  
+  ```js
+  var arr = ["1","2","1","2","3","1"];
+  var set = new Set(arr);
+  //得到一个新的Set：{"1","2","3"};
+  ```
+
+    二：Set转数组：
+
+  ```js
+  var arr1= Array.from(set );
+  //得到一个新的数组：["1","2","3"];
+  ```
+
+    (2)：使用Set给数组去重：
+  
+  ```js
+  //定义一个新的数组：
+  var arr = ["1","2","1","2","3","1"];
+  ```
+  
+    方法一：
+  
+  ```js
+  var arr1 = Array.from(new Set(arr));
+  //得到一个新的数组：["1","2","3"];
+  ```
+
+    方法二：
+  
+  ```js
+  var arr1 = [...new Set(arr)];
+  //得到一个新的数组：["1","2","3"];
+  ```
+  
+    (3)：求两个Set的并集，交集，差集：
+  
+  ```js
+  var arr1 = ["1","2","3"];
+  var arr2 = ["1","2"];
+  var set1= new Set(arr1);
+  var set2= new Set(arr2);
+  
+  //并集后：
+  var newSet1 = new Set([...set1,...set2]);
+  //得到一个新的Set：{"1","2","3"};
+  
+  //交集后：
+  var newSet2 = new Set([...set1].filter(x => set2.has(x)));
+  //得到一个新的Set：{"1", "2"};
+  
+  //差集后：
+  var newSet3 = new Set([...set1].filter(x => !set2.has(x)));
+  //得到一个新的Set：{"3"};
+  ```
+  
+- map(映射)
+
+  ```js
+  var m = new Map([['Michael', 95], ['Bob', 75], ['Tracy', 85]]);
+  m.get('Michael'); // 95
+  ```
+
+  ```js
+  var m = new Map(); // 空Map
+  m.set('Adam', 67); // 添加新的key-value
+  m.set('Bob', 59);
+  m.has('Adam'); // 是否存在key 'Adam': true
+  m.get('Adam'); // 67
+  m.delete('Adam'); // 删除key 'Adam'
+  m.get('Adam'); // undefined
+  ```
+
+  
+
+### 242.有效的字母异位词
+
+方法一：准备一个数组，循环字符串s，每个元素出现一次加1，然后循环t元素，每次出现的字符减1，如果t中出现一些不在s中的字符 则返回false，所有循环结束 说明两个字符串中每个字符的数量相同
+#### String.prototype.codePointAt()
+
+`str.codePointAt(pos)`方法返回 一个 Unicode 编码点值的非负整数。pos:这个字符串中需要转码的元素的位置(开始值为0)。
+
+**Array.prototype.fill**()
+
+`fill()` 方法用一个固定值填充一个数组中从起始索引到终止索引内的全部元素。
+
+```
+console.log([1, 2, 3].fill(4));                // [4, 4, 4]
+```
+
+
+
+```js
+var isAnagram = function(s, t) {
+    if (s.length !== t.length) {//长度不想等 直接返回false
+        return false;
+    }
+    const table = new Array(26).fill(0);//大小为26的数组
+    for (let i = 0; i < s.length; ++i) {//循环字符串s，每个元素出现一次加1
+        table[s.codePointAt(i) - 'a'.codePointAt(0)]++;
+    }
+    for (let i = 0; i < t.length; ++i) {//循环t元素
+        table[t.codePointAt(i) - 'a'.codePointAt(0)]--;//每次出现的字符减1
+      	//如果t中出现一些字符对于s中的字符 则返回false
+        if (table[t.codePointAt(i) - 'a'.codePointAt(0)] < 0) {
+            return false;
+        }
+    }
+    return true;//所有循环结束 说明两个字符串中每个字符的数量相同
+}
+```
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram = function (s, t) {
+    let arr = new Array(26).fill(0)
+    for (item of s) {
+        arr[item.codePointAt(0) - 'a'.codePointAt(0)]++
+    }
+    for (item of t) {
+        arr[item.codePointAt(0) - 'a'.codePointAt(0)]--
+    }
+    for (item of arr) {
+        if (item !== 0) return false
+    }
+    return true
+};
+```
+
+方法二：两个字符串转成数组，排序后转回字符串进行比较
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram = function(s, t) {
+let arrs=[...s]
+let arrt=[...t]
+arrs.sort((a,b)=>a===b?0:a<b?-1:1)
+arrt.sort((a,b)=>a===b?0:a<b?-1:1)
+sortedS=arrs.toString()
+sortedT=arrt.toString()
+return sortedS===sortedT
+};
+```
+
+### 349. 两个数组的交集
+
+```js
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number[]}
+ */
+var intersection = function (nums1, nums2) {
+    let arrL, arrS
+    let res = []
+    nums1.length > nums2.length ? (arrL = nums1, arrS = nums2) : (arrL = nums2, arrS = nums1)
+    for (let item of arrS) {
+        if (arrL.indexOf(item) !== -1) res.push(item)
+    }
+    res = [...new Set(res)]//给数组去重
+    return res
+};
+```
+
+### 202. 快乐数
+
+其实就是看他会不会进入一个循环，进入循环就不快乐了
+
+```js
+
+// 获取当前数的按位平方和
+function getNextHappy(n) {
+    const ns = Array.from(String(n))
+    return ns.reduce((a, c) => a + c * c, 0)
+}
+
+var isHappy = function(n) {
+    let happy = n
+    // 申请一个映射表检测是否循环
+    const happyMap = { [happy]:true }
+    // 不断迭代直到确认是快乐数
+    while(happy !== 1) {
+        // 更新平方和
+        happy = getNextHappy(happy)
+        // 如果循环就完了, 不快乐
+        if (happyMap.hasOwnProperty(happy)) return false
+        // 更新映射表
+        happyMap[happy] = true
+    }
+    // 如果能到这里就有快乐
+    return true
+};
+```
+
+```js
+//mine!
+/**
+ * @param {number} n
+ * @return {boolean}
+ */
+
+    // 获取当前数的按位平方和
+const getSum = function (num) {
+        let arr = num.toString().split('')
+        let res = 0
+        for (item of arr) {
+            res += item ** 2
+        }
+        return res
+    }
+var isHappy = function (n) {
+    let set = new Set()
+    let num = n
+    while (num !== 1) {
+        num = getSum(num)
+        if (!set.has(num)) set.add(num)
+        else return false
+
+    }
+    return true
+
+};
+```
+
+## 字符串
+
+### 344.反转字符串
+
+```js
+//mine 简单
+/**
+ * @param {character[]} s
+ * @return {void} Do not return anything, modify s in-place instead.
+ */
+var reverseString = function (s) {
+    let tmp
+    for (let l = 0, r = s.length - 1; l < r; l++, r--) {
+        tmp = s[l]
+        s[l] = s[r]
+        s[r] = tmp
+    }
+    return s
+};
+
+```
+
+###  541. 反转字符串II
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {string}
+ */
+var reverse = function (a, b, arr) {
+    let tmp
+    for (; a < b; a++, b--) {
+        tmp = arr[a]
+        arr[a] = arr[b]
+        arr[b] = tmp
+    }
+    return arr
+}
+var reverseStr = function (s, k) {
+    let arr = s.split('')
+    if (arr.length < 4) return arr.join('')
+    for (let l = 0, r = 2 * k - 1; arr[l]; l += 2 * k, r += 2 * k) {
+        if (arr[r]) reverse(l, l + k - 1, arr)
+        else if (arr[l + k - 1]) reverse(l, l + k - 1, arr)
+        else reverse(l, arr.length, arr)
+    }
+    return arr.join('')
+};
+```
+
+### 剑指 Offer 05. 替换空格
+
+```js
+//mine
+var replaceSpace = function(s) {
+    let arr=s.split('')
+    for (let i = 0; i <arr.length; i++) {
+        if(arr[i]===' ')arr[i]='%20'
+    }
+    return arr.join('')
+};
+```
+
+### 151. 颠倒字符串中的单词
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var reverseWords = function(s) {
+    let arr=s.trim().split(' ').reverse()
+    for(let i=0;i<arr.length;i++){
+        if(arr[i]===''){
+            arr.splice(i,1)
+            i--//别忘了
+        }
+    }
+    return arr.join(' ')
+};
+```
+
+### 剑指 Offer 58 - II. 左旋转字符串
+
+#### String.prototype.substring()
+
+**`substring()`** 方法返回一个字符串在开始索引到结束索引之间（左闭右开）的一个子集，或从开始索引直到字符串的末尾的一个子集。
+
+```js
+//mine easy
+var reverseLeftWords = function(s, n) {
+let sub1=s.substring(n)
+let sub2=s.substring(0,n)
+return sub1+sub2
+
+};
+```
+
+### 28. 实现 strStr()
+
+### 459.重复的子字符串
+
+#### String.prototype.repeat()
+
+`str.repeat(count)` 构造并返回一个新字符串，该字符串包含被连接在一起的指定数量的字符串的副本。
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var repeatedSubstringPattern = function(s) {
+    if(s.length===1)return false
+    for(let count=1;count<s.length;count++){
+        if(s.length%count!==0)continue
+        let newStr=s.substring(0,count).repeat(s.length/count)
+        if(newStr===s)return true
+    }
+    return false
+};
+```
+
+## 栈与队列
+
+js中一般用数组来模拟栈与队列
+
+### 20. 有效的括号
+
+```js
+//mine
+var isValid = function(s) {
+const stack=[]
+const map={
+    '(':')',
+    '[':']',
+    '{':'}'
+}
+let popThing
+for(let item of s){
+    if(item in map){
+        stack.push(item)
+    }else{
+        popThing=stack.pop()
+        if(item!==map[popThing]) return false
+    }
+}
+    if(stack.length>0)return false
+    return true
+};
+```
+
+### 1047. 删除字符串中的所有相邻重复项
+
+```js
+//mine
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var removeDuplicates = function (s) {
+    let arr = s.split('')
+    let stack = []
+    for (let item of arr) {
+        if (stack[stack.length - 1] !== item) stack.push(item)
+        else stack.pop()
+    }
+    return stack.join('')
+};
+```
+
+### 150. 逆波兰表达式求值
+
+![img](https://code-thinking.cdn.bcebos.com/gifs/150.%E9%80%86%E6%B3%A2%E5%85%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.gif)
+
+```js
+/**
+ * @param {string[]} tokens
+ * @return {number}
+ */
+var evalRPN = function(tokens) {
+    const s = new Map([
+        ["+", (a, b) => a * 1  + b * 1],
+        ["-", (a, b) => b - a],
+        ["*", (a, b) => b * a],
+        ["/", (a, b) => (b / a) | 0]
+    ]);
+    const stack = [];
+    for (const i of tokens) {
+        if(!s.has(i)) {
+            stack.push(i);
+            continue;
+        }
+        stack.push(s.get(i)(stack.pop(),stack.pop()))
+    }
+    return stack.pop();
+};
+```
+
+```js
+//mine
+/**
+ * @param {string[]} tokens
+ * @return {number}
+ */
+var evalRPN = function (tokens) {
+    let map = new Map(
+        [['+', (a, b) => parseInt(b) + parseInt(a)],
+            ['-', (a, b) => parseInt(b) - parseInt(a)],
+            ['*', (a, b) => parseInt(b) * parseInt(a)],
+            ['/', (a, b) => parseInt(parseInt(b) / parseInt(a))]]
+    )
+    let stack = []
+    let tmp
+    while (tokens.length) {
+        tmp = tokens.shift()
+        if (map.has(tmp)) {
+            stack.push(map.get(tmp)(stack.pop(), stack.pop()))
+        } else {
+            stack.push(tmp)
+        }
+    }
+    return stack[0]
+};
+```
+
+### 239. 滑动窗口最大值
+
+单调队列：维护窗口，向右移动时左侧超出窗口的值弹出，因为需要的是窗口内的最大值，所以只要保证窗口内的值是递减的即可，小于新加入的值全部弹出，最大值维护在队列的出口处。
+
+### 347. 前 K 个高频元素
+
+#### ES6中Map与对象、数组，JSON之间的相互转换
+
+https://blog.csdn.net/jingtian678/article/details/94365296
+
+#### Array.prototype.map()
+
+**`map()`** 方法创建一个新数组，这个新数组由原数组中的每个元素都调用一次提供的函数后的返回值组成。
+
+
+
+```js
+var topKFrequent = function(nums, k) {
+    const map = new Map()
+    nums.forEach(n => {
+        map.set(n, map.has(n) ? map.get(n)+1 : 1)
+    })
+    // 首先将字典转成数组，然后对数组中的第二个元素（频度）从小到大排序
+    const list = Array.from(map).sort((a, b) => b[1] - a[1])
+    // 截取频率前k高的元素
+    return list.slice(0, k).map(n => n[0])
+};
+```
+
+```js
+//mine
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+var topKFrequent = function(nums, k) {
+let map=new Map()
+for(let item of nums){
+    if(map.has(item)) map.set(item,map.get(item)+1)
+    else map.set(item,1)
+}
+let arr=[...map]
+//根据数组每个元素的第二个元素排序
+arr.sort((a,b)=>b[1]-a[1])
+return arr.slice(0,k).map((item)=>item[0])
+
+};
+```
+
+## 二叉树
+
+### 144. 二叉树的前序遍历
+
+补充：什么是递归和迭代？ 递归是自己调用自己的话,迭代就是A不停的调用B。
+
+```js
+//递归
+var preorderTraversal = function(root) {
+  let arr = []
+  var preorder = function(node, arr) {
+    if (node === null) return arr
+    arr.push(node.val)
+    preorder(node.left, arr)
+    preorder(node.right, arr)
+  }
+  preorder(root, arr)
+  return arr
+};
+```
+
+```js
+//mine
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function (root) {
+    let res = []
+    const preorder = function (node, res) {
+        if (node === null) return res
+        else {
+            res.push(node.val)
+            preorder(node.left, res)
+            preorder(node.right, res)
+        }
+    }
+    preorder(root, res)
+    return res
+};
+```
+
+
+
+### 94. 二叉树的中序遍历
+
+```js
+//mine
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var inorderTraversal = function(root) {
+let res=[]
+const inorder=function(node,res){
+    if(node===null)return res
+    else{
+        inorder(node.left,res)
+        res.push(node.val)
+        inorder(node.right,res)
+    }
+    return res
+}
+inorder(root,res)
+return res
+};
+```
+
+### 145. 二叉树的后序遍历
+
+```js
+var postorderTraversal = function(root) {
+let res=[]
+const postorder=function(node,res){
+    if(node===null)return res
+    else{
+        postorder(node.left,res)
+        postorder(node.right,res)
+        res.push(node.val)
+    }
+    return res
+}
+postorder(root,res)
+return res
+};
+```
+
+### 102. 二叉树的层序遍历
+
+![img](https://pic.leetcode-cn.com/fdcd3bd27f4008948084f6ec86b58535e71f66862bd89a34bd6fe4cc42d68e89.gif)
+
+深度优先遍历dfs
+
+```js
+var levelOrder = function (root) {
+  const result = [];
+
+  const traverse = (node, layer) => {
+    if (node !== null) {
+      traverse(node.left, layer + 1);
+      result[layer] ? result[layer].push(node.val) : result[layer] = [node.val];
+      traverse(node.right, layer + 1);
+    }
+  }
+  traverse(root, 0);
+  return result;
+};
+```
+
+```js
+//mine
+var levelOrder = function(root) {
+    let res=[]
+
+const dfs = function(node,level,res){
+    if(!node)return res
+    dfs(node.left,level+1,res)
+    res[level]?res[level].push(node.val):res[level]=[node.val]
+    dfs(node.right,level+1,res)
+
+}
+dfs(root,0,res)
+return res
+};
+```
+
+### 199. 二叉树的右视图
+
+**dfs**
+
+```js
+//mine
+//dfs
+var rightSideView = function (root) {
+    const dfs = function (node, level, res) {
+        if (!node) return res
+        if (res.length === level) {//要加上这个限制条件
+            res.push(node.val)
+        }
+
+        dfs(node.right, level + 1, res)
+        dfs(node.left, level + 1, res)
+    }
+    let res = []
+    dfs(root, 0, res)
+    return res
+};
+```
+
+### 637. 二叉树的层平均值
+
+```js
+//mine
+var averageOfLevels = function(root) {
+let res=[]
+const dfs=function(node,level,res){
+    if(!node)return res
+    res[level]?res[level].push(node.val):res[level]=[node.val]
+    dfs(node.left,level+1,res)
+    dfs(node.right,level+1,res)
+}
+dfs(root,0,res)
+let sum
+let avg=[]
+for(let i=0;i<res.length;i++){
+    sum=0
+    for(let j=0;j<res[i].length;j++){
+        sum+=res[i][j]
+    }
+    avg.push(sum/res[i].length)
+}
+return avg
+};
+```
+
+### 429. N 叉树的层序遍历
+
+```js
+//mine
+var levelOrder = function(root) {
+    let res=[]
+    const dfs=function(node,level,res){
+        if(!node)return res
+        res[level]?res[level].push(node.val):res[level]=[node.val]
+        if(node.children){
+            for(let i=0;i<node.children.length;i++){
+                dfs(node.children[i],level+1,res)
+            }
+        }
+    }
+    dfs(root,0,res)
+    return res
+};
+```
+
+### 226. 翻转二叉树
+
+```js
+//mine
+var invertTree = function (root) {
+    const dfs = function (node) {
+        if (node) {
+            let tmp
+            tmp = node.left
+            node.left = node.right
+            node.right = tmp
+
+            dfs(node.left)
+            dfs(node.right)
+        }
+    }
+    dfs(root)
+    return root
+};
+```
+
+### 101. 对称二叉树
+
+对称二叉树满足条件:
+
+左右子树根节点相等
+左子树的左孩子等于右子树的右孩子
+左子树的右孩子等于右子树的左孩子
+递归判断，递归函数的参数是左右两棵子树，如果只传一棵子树，是无法判断是对称二叉树的，对称行为是两个子树的行为
+
+```js
+var isSymmetric = function (root) {
+    if (root == null) return true
+    function dfs(p, q) {
+        if (p == null && q == null) return true
+        if (p == null && q !== null || (p !== null && q == null)) return false
+        if (p.val != q.val) return false
+        return dfs(p.left, q.right) && dfs(p.right, q.left)
+    }
+    return dfs(root.left, root.right)
+};
+```
+
+```js
+//mine
+var isSymmetric = function(root) {
+   const dfs=function(left,right){
+       if(left===null&&right===null)return true
+       if((left===null&&right!==null)||(left!==null&&right===null))return false
+       if(left.val===right.val)return dfs(left.left,right.right)&&dfs(left.right,right.left)
+       else return false
+   }
+   return dfs(root.left,root.right)
+};
+```
+
+### 104. 二叉树的最大深度
+
+```js
+var maxDepth = function(root) {
+    if (root === null) return 0
+    return 1 + Math.max(maxDepth(root.left), maxDepth(root.right))
+};
+
+```
+
+```js
+//mine
+var maxDepth = function(root) {
+	if(!root)return 0
+	return 1+Math.max(maxDepth(root.left),maxDepth(root.right))
+};
+```
+
+### 111. 二叉树的最小深度
+
+```js
+//mine
+var minDepth = function(root) {
+if(!root)return 0
+if(!root.left)return minDepth(root.right)+1
+else if(!root.right)return minDepth(root.left)+1
+else return Math.min(minDepth(root.left),minDepth(root.right))+1
+};
+```
+
+### 222. 完全二叉树的节点个数
+
+完全二叉树只有两种情况，情况一：就是满二叉树，情况二：最后一层叶子节点没有满。
+
+对于情况一，可以直接用 2^树深度 - 1 来计算，注意这里根节点深度为1。
+对于情况二，分别递归左孩子，和右孩子，递归到某一深度一定会有左孩子或者右孩子为满二叉树，然后依然可以按照情况1来计算。
+
+怎么判断子树是「满二叉树」呢？
+只需要求出「左高」和「右高」，相等即为「满二叉树」
+左高：顾名思义，一直通过左孩子节点求出来的高度；右高：顾名思义，一直通过右孩子节点求出来的高度
+
+```js
+var countNodes = function(root) {
+    const count=function(node){
+        if(!node) return 0
+    
+        let leftTmp=node
+        let rightTmp=node
+        //求左高
+        let leftH=0
+        while(leftH){
+            leftH++
+            leftH=leftH.left
+        }
+        //求右高
+        let rightH=0
+         while(rightTmp){
+            rightH++
+            rightTmp=rightTmp.right
+        }
+        if(leftH===rightH)return Math.pow(2,leftH)-1
+        else return count(node.left)+count(node.right)+1
+        
+    }
+    return count(root)
+};
+```
+
+### 110. 平衡二叉树
+
+```js
+//mine
+var isBalanced = function(root) {
+    const height=function(node){
+        if(!node)return 0
+        else return 1+Math.max(height(node.left),height(node.right))
+    }
+    let flag=true
+    const dfs=function(node){
+        if(!node)return 
+        let abs=Math.abs(height(node.left)-height(node.right))
+        if(abs>1){
+            flag=false
+            return
+        }else{
+            dfs(node.left)
+            dfs(node.right)
+        }
+    }
+    dfs(root)
+    
+    return flag
+};
+```
+
+### 257. 二叉树的所有路径
+
+```js
+var binaryTreePaths = function(root) {
+    const paths = [];
+    const dfs = (root, path) => {//传入递归的节点和路径数组
+        if (root) {
+            path += root.val.toString();//加入当前节点
+          	//叶子结点就将所有连接起来的节点字符串加入paths中 也就是其中一条路径
+            if (root.left === null && root.right === null) { 
+                paths.push(path); 
+            } else {
+                path += "->"; //不是叶子节点继续递归左右子树
+                dfs(root.left, path);
+                dfs(root.right, path);
+            }
+        }
+    }
+    dfs(root, "");
+    return paths;
+};
+```
+
+```js
+ //mine
+ var binaryTreePaths = function(root) {
+     let paths=[]
+     const dfs=function(node,path){
+         if(!node)return
+         path+=node.val
+         if(node.left===null&&node.right===null) {
+             paths.push(path)
+         }
+         else{
+             path+='->'
+             dfs(node.left,path)
+             dfs(node.right,path)
+         }
+     }
+     dfs(root,'')
+     return paths
+ };
+```
+
+### 404. 左叶子之和
+
+```js
+var sumOfLeftLeaves = function(root) {
+     let number = 0;
+  const sum = (root) => {
+    //边界条件
+    if (root === null) {
+      return;
+    }
+    //是左叶子节点
+    if (root.left && !root.left.left && !root.left.right) {
+      number = number + root.left.val;
+    }
+    //不是左叶子节点
+      sum(root.left);
+      sum(root.right);
+  };
+  sum(root);
+  return number;
+};
+```
+
+### 513. 找树左下角的值
+
+```
+var findBottomLeftValue = function(root) {
+
+  let curMaxDepth = -1, curVal = 0
+
+  var dfs = function(root, curDepth){
+    if(!root) return null;
+    if(curDepth > curMaxDepth){
+      curMaxDepth = curDepth
+      curVal = root.val
+    }
+
+    dfs(root.left, curDepth+1)
+    dfs(root.right, curDepth + 1)
+  }
+
+  dfs(root, 0)
+  return curVal
+};
+
+作者：yi-xiao-i
+链接：https://leetcode.cn/problems/find-bottom-left-tree-value/solution/javascript-bfs-dfsqian-xu-by-yi-xiao-i-nc2z/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+#### js怎么跳出递归
+
+在js 的递归循环中，找到了节点想跳出递归循环，如果是单纯的return或者break的时候，并没有阻止递归的循环
+
+return true可以结束递归
+
+**回溯的本质是穷举，穷举所有可能，然后选出我们想要的答案**
+
+回溯法，一般可以解决如下几种问题：
+
+- 组合问题：N个数里面按一定规则找出k个数的集合
+- 切割问题：一个字符串按一定规则有几种切割方式
+- 子集问题：一个N个数的集合里有多少符合条件的子集
+- 排列问题：N个数按一定规则全排列，有几种排列方式
+- 棋盘问题：N皇后，解数独等等
