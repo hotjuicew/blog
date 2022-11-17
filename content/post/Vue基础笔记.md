@@ -2628,6 +2628,7 @@ Vue3为我们提供了readonly的方法； readonly会返回原始对象的只�
 ### 8 setup中computed方法
 computed返回的是一个ref对象
 如何使用computed呢？
+
 - 方式一：接收一个getter函数，并为 getter 函数返回的值，返回一个不变的 ref 对象；
 - 方式二：接收一个具有 get 和 set 的对象，返回一个可变的（可读写）ref 对象；
 
@@ -3302,7 +3303,7 @@ app.mount('#app')
 **那么在User中如何获取到对应的值呢?**
 在template中，直接通过 $route.params获取值；
 - 在created中，通过 this.$route.params获取值；
-- 在setup中，我们要使用 vue-router库给我们提供的一个hook useRoute；该Hook会返回一个Route对象，对象中保存着当前路由相关的值；
+- 在setup中，我们要使用 vue-router库)我们提供的一个hook useRoute；该Hook会返回一个Route对象，对象中保存着当前路由相关的值；
 ```vue
 <template>
   <div class="user">
@@ -3869,6 +3870,7 @@ export default router
 
 **在前面我们是如何管理自己的状态呢**？
 	在Vue开发中，我们使用组件化的开发方式；
+
 - 而在组件中我们定义**data**或者在setup中返回使用的数据，这些数
   据我们称之为**state**；
 - 在**模块template**中我们可以使用这些数据，模块最终会被渲染成
@@ -5026,6 +5028,10 @@ axios.all([
 
 
 ### 3.axios的创建实例
+
+[Axios基本使用](https://bbs.huaweicloud.com/blogs/314844)
+
+[axios请求封装和异常统一处理](https://segmentfault.com/a/1190000012804684)
 
 为什么要创建axios的实例呢?
 当我们从axios模块中导入对象时, 使用的实例是默认的实例；当给该实例设置一些默认配置时, 这些配置就被固定下来了.但是后续开发中, 某些配置可能会不太一样；比如某些请求需要使用特定的baseURL或者timeout等.这个时候, 我们就可以创建新的实例, 并且传入属于该实例的配置信息.
