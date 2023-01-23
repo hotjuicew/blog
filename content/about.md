@@ -34,19 +34,3 @@ draft: false
 
 📱Used to be the Ingress Enlightened
 
-
-
-📖Learning English by reading the Harry Potter series and watching TV shows
-
-​     Prefer to read rather than watch TV cause that's more convenient
-
-- Foreign Novel: The Great Gatsby, Gone with the Wind,...
-- Chinese Novel: The Dream of Red Mansions,  The Ordinary World...
-- Martial Arts Fiction:  prefer Gu Long to Jin Yong...
-- Science Fiction: ...
-- Detective Fiction: Agatha, Higashino Keigo...
-- Books about social science and psychology
-- Internet Novels: Lord of the Mysteries, West out of Yumen ...
-
-
-You can also discuss  field of economy and management with me because I have a degree in accounting
