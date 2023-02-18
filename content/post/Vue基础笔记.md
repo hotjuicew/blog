@@ -1,7 +1,7 @@
 ---
 title: "Vue基础笔记"
 date: 2022-07-13T17:54:41+08:00
-categories: [Vue]
+categories: ['Vue']
 tags: []
 ---
 

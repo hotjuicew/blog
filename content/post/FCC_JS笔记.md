@@ -1,7 +1,7 @@
 ---
 title: "FCC_JS笔记"
 date: 2022-07-10T13:49:32+08:00
-categories: [JavaScript]
+categories: ['JavaScript']
 tags: []
 ---
 # JavaScript 

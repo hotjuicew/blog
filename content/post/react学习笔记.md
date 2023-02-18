@@ -1,7 +1,7 @@
 ---
 title: "React学习笔记"
 date: 2022-08-31T21:48:01+08:00
-categories: [react]
+categories: ['react']
 tags: []
 ---
 

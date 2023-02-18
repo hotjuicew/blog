@@ -1,4 +1,4 @@
-baseURL = 'http://hotjui.cc'
+baseURL = 'http://add1.dev'
 languageCode = 'en-us'
 theme = "JuiceBar"
 title = "Hotjuice's Blog"
@@ -6,7 +6,6 @@ title = "Hotjuice's Blog"
 [params]
 author = "Hotjuice"
 description = "Hotjuice's blog"
-# 如果您想在每篇博客文章中显示自己的图像，则将图像添加到static/images目录并修改站点参数config.toml以指向它
 authorImage = "/images/profile.jpg"
 paginate = 4
 

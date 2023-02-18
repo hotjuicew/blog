@@ -2,7 +2,6 @@
 title: "Markdown简明语法总结"
 date: 2022-07-18T12:08:30+08:00
 categories: ["工具"]
-tags: ["Markdown"]
 ---
 ### 1.斜体和加粗
 #### 斜体：使用下划线` _ ` 包裹文本
@@ -102,5 +101,4 @@ If you're thinking to yourself, **_This is unbelievable_**, you'd probably be ri
    * 确保没有障碍物或小孩在场
    * 用双手
    * 在旁边防止毛巾以便于清理
-
 

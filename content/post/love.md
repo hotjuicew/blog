@@ -1,8 +1,7 @@
 ---
 title: "Love U 💕"
 date: 2022-02-13T00:00:00+08:00
-categories: [生活]
-tags: [生活]
+categories: ['生活']
 ---
 
 {{< rawhtml >}}
