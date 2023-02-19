@@ -52,7 +52,5 @@ url = "/privacy"
 
 
 #用于输出文档的设置
-
-
 [outputs]
 home = ["HTML", "RSS", "JSON"]
