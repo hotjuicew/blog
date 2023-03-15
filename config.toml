@@ -20,9 +20,6 @@ url = "https://github.com/hotjuicew"
 name = "telegram"
 url = "https://t.me/Hotjuice"
 [[params.social]]
-name = "twitter"
-url = "https://twitter.com/hotjuicee"
-[[params.social]]
 name = "email"
 url = "mailto:hotjuicew@outlook.com"
 
