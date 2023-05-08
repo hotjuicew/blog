@@ -1,5 +1,5 @@
 baseURL = 'http://add1.dev'
-languageCode = 'en-us'
+languageCode = 'zh-CN'
 theme = "JuiceBar"
 title = "Hotjuice's Blog"
 
