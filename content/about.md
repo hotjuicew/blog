@@ -5,32 +5,9 @@ layout: about
 draft: false
 ---
 
+一个（尝试）积极努力学习探索 人（~~
+正在经历一些找不到工作的挫折（/(ㄒoㄒ)/~~
+还是自己太菜了 学习中~
 
-### In general
-
-👩‍💻Brave girl learn to code
-
-👩‍❤️‍👨In love 
-
-😸Genial and enthusiastic
-
-🤩sometimes passionate 
-
-😿but boredom comes  easily
-
-🤦‍♀️May be kind of aggressive in debates...
-
-✨Every experience is irreplaceable
-
-### Hobby
-
-👩‍🍳Enjoy cooking
-
-🍋A big fan of lemon tea
-
-🚴‍♀️like biking  
-
-🏸love playing badminton
-
-📱Used to be the Ingress Enlightened
+期待自己成为dalao的那一天（狗头
 
