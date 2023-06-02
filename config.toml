@@ -1,16 +1,16 @@
 baseURL = 'http://add1.dev/'
 languageCode = 'zh-CN'
 theme = "JuiceBar"
-title = "Hotjuice's Blog"
+title = "Jasmine's Blog"
 
 [params]
-author = "Hotjuice"
-description = "Hotjuice's blog"
+author = "Jasmine"
+description = "Jasmine's blog"
 authorImage = "/images/profile.jpg"
 paginate = 4
 
 Title = "Jasmine"
-content = "I'm Hotjuice, nice to meet you(ˊ˘ˋ*)♡"
+content = "I'm Jasmine, nice to meet you(ˊ˘ˋ*)♡"
 imageUrl = "/images/avatar.jpg"
 #添加新的社交图标
 [[params.social]]
