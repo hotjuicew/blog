@@ -2,12 +2,11 @@ baseURL = 'http://add1.dev/'
 languageCode = 'zh-CN'
 theme = "JuiceBar"
 title = "Jasmine's Blog"
-
+paginate = 4
 [params]
 author = "Jasmine"
 description = "Jasmine's blog"
 authorImage = "/images/profile.jpg"
-paginate = 4
 
 Title = "Jasmine"
 content = "I'm Jasmine, nice to meet you(ˊ˘ˋ*)♡"
