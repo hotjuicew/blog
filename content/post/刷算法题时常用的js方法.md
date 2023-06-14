@@ -253,7 +253,7 @@ map.delete(headKey)
 
 ### 前端算法面试高频
 
-#### 1.NC78反转链表 *三指针
+### 1.NC78反转链表 *三指针
 
 ![image-20221107233804640](C:\Users\Jasmine\Desktop\面试\img\image-20221107233804640.png)
 
@@ -598,7 +598,7 @@ function bucketSort(arr) {
 console.log(bucketSort([4,3,2,8,3,8,5,99,66,54,25,13,74,13,64,78,42,5]))
 ```
 
-#### 3.NC93 设计LRU缓存结构  *利用Map
+### 3.NC93 设计LRU缓存结构  *利用Map
 
 这题使用Map就行
 
@@ -665,7 +665,7 @@ module.exports = {
  */
 ```
 
-#### 4.NC45 实现二叉树先序，中序和后序遍历
+### 4.NC45 实现二叉树先序，中序和后序遍历
 
 法一:递归
 
@@ -815,7 +815,7 @@ console.log(threeOrders(bt))
 
 
 
-#### 5.NC119 最小的K个数
+### 5.NC119 最小的K个数
 
 ```js
 function GetLeastNumbers_Solution(input, k)
@@ -828,7 +828,7 @@ module.exports = {
 };
 ```
 
-#### 6.NC15 求二叉树的层序遍历 *利用队列
+### 6.NC15 求二叉树的层序遍历 *利用队列
 
 BFS
 
@@ -873,7 +873,7 @@ module.exports = {
 
 ```
 
-#### 7.NC88 寻找第K大 
+### 7.NC88 寻找第K大 
 
 要求使用快速排序
 
@@ -908,7 +908,7 @@ function quickSort(arr){
 }
 ```
 
-#### 8.NC61 两数之和 *利用Map
+### 8.NC61 两数之和 *利用Map
 
 给出一个整型数组 numbers 和一个目标值 target，请在数组中找出两个加起来等于目标值的数的下标，返回的下标按升序排列。
 
@@ -926,7 +926,7 @@ function twoSum( numbers ,  target ) {
 }
 ```
 
-#### 9.NC33 合并两个排序的链表 *利用指针
+### 9.NC33 合并两个排序的链表 *利用指针
 
 输入两个递增的链表，单个链表的长度为n，合并这两个链表并使新链表中的节点仍然是递增排序的。
 要求：空间复杂度 O(1)，时间复杂度 O(n)
@@ -961,7 +961,7 @@ function Merge(pHead1, pHead2) {
 }
 ```
 
-#### 10.NC76 用两个栈实现队列
+### 10.NC76 用两个栈实现队列
 
 ```js
 //不懂这题难在哪
@@ -978,7 +978,7 @@ function pop()
 }
 ```
 
-#### 11.NC68 跳台阶 *动态规划 递归
+### 11.NC68 跳台阶 *动态规划 递归
 
 解题思路：
 
@@ -999,7 +999,7 @@ function jumpFloor(number) {
 }
 ```
 
-#### 12.NC19 连续子数组的最大和 *动态规划
+### 12.NC19 连续子数组的最大和 *动态规划
 
 动态规划，走到每一步知道当前最大值
 
@@ -1022,7 +1022,7 @@ function FindGreatestSumOfSubArray(array)
 }
 ```
 
-#### 13.NC41 最长无重复子数组 *双指针(滑动窗口)+Map
+### 13.NC41 最长无重复子数组 *双指针(滑动窗口)+Map
 
 ```js
 function maxLength( arr ) {
@@ -1045,7 +1045,7 @@ function maxLength( arr ) {
 }
 ```
 
-#### 14.NC4 判断链表中是否有环 *利用map
+### 14.NC4 判断链表中是否有环 *利用map
 
 ```js
 function hasCycle( head ) {
@@ -1060,7 +1060,7 @@ function hasCycle( head ) {
 }
 ```
 
-#### 15.NC22 合并两个有序的数组 *插入排序
+### 15.NC22 合并两个有序的数组 *插入排序
 
 要求:请你 合并 `nums2` 到 `nums1` 中，使合并后的数组同样按 非递减顺序 排列。
 
@@ -1081,7 +1081,7 @@ function merge(A, m, B, n) {
 }
 ```
 
-#### 16.NC3 链表中环的入口结点
+### 16.NC3 链表中环的入口结点
 
 做法和14几乎一模一样
 
@@ -1107,7 +1107,7 @@ function isValid( s ) {
 }
 ```
 
-#### 18.NC53 删除链表的倒数第n个节点 *先翻转再删除
+### 18.NC53 删除链表的倒数第n个节点 *先翻转再删除
 
 ```js
 function removeNthFromEnd( head ,  n ) {
@@ -1141,7 +1141,7 @@ function reverse(head){
 }
 ```
 
-#### 19.NC1 大数加法 *指针
+### 19.NC1 大数加法 *指针
 
 两个字符串从后向前遍历，模拟人工加法，然后每次插入到一个新的字符串的头部，注意保存进位即可
 
@@ -1164,7 +1164,7 @@ function solve( s ,  t ) {
 }
 ```
 
-#### 20.NC14 按之字形顺序打印二叉树
+### 20.NC14 按之字形顺序打印二叉树
 
 把层序遍历改编下就行
 
@@ -1194,7 +1194,7 @@ function Print(pRoot)
 }
 ```
 
-#### 20.LC1143.最长公共子序列 *动态规划 二维数组
+### 20.LC1143.最长公共子序列 *动态规划 二维数组
 
 ![image-20221109154044727](C:\Users\Jasmine\Desktop\面试\img\image-20221109154044727.png)
 
@@ -1219,7 +1219,7 @@ var longestCommonSubsequence = function(text1, text2) {
 
 
 
-#### 21.NC127 最长公共子串
+### 21.NC127 最长公共子串
 
 ![image-20221110182919778](C:\Users\Jasmine\Desktop\面试\img\image-20221110182919778.png)和上一题类似，区别是 两字符串相同:` dp[i][j] = dp[i-1][j-1] + 1`; 不同: `dp[i][j] = 0;`
 
@@ -1245,7 +1245,7 @@ function LCS( str1 ,  str2 ) {
 }
 ```
 
-#### 22.NC66 两个链表的第一个公共结点
+### 22.NC66 两个链表的第一个公共结点
 
 ![image-20221110190612930](C:\Users\Jasmine\Desktop\面试\img\image-20221110190612930.png)
 
@@ -1265,7 +1265,7 @@ var getIntersectionNode = function (headA, headB) {
 }
 ```
 
-#### 23.NC40 链表相加(二) *栈 头插法
+### 23.NC40 链表相加(二) *栈 头插法
 
 <img src="C:\Users\Jasmine\Desktop\面试\img\C2DB572B01B0FDC03C097BE7ABA45114" alt="img" style="zoom:50%;" />
 
@@ -1316,7 +1316,7 @@ function addInList(head1, head2) {
 }
 ```
 
-#### 24 NC102 在二叉树中找到两个节点的最近公共祖先 *递归左右子树
+### 24 NC102 在二叉树中找到两个节点的最近公共祖先 *递归左右子树
 
 首先要明白一点：如果从一个节点，从它左子树找能找到一个节点，从右子树找能找到一个节点，那么它就是最近公共祖先
 
@@ -1337,7 +1337,7 @@ function lowestCommonAncestor(root, o1, o2) {
 
 ![image-20221111223922886](C:\Users\Jasmine\Desktop\面试\img\image-20221111223922886.png)
 
-#### 25 NC103 反转字符串
+### 25 NC103 反转字符串
 
 ```js
 function solve(str) {
@@ -1351,7 +1351,7 @@ function solve(str) {
 }
 ```
 
-#### 26 NC38 螺旋矩阵 *维护边界
+### 26 NC38 螺旋矩阵 *维护边界
 
 ```js
 var spiralOrder = function (matrix) {
@@ -1388,7 +1388,7 @@ var spiralOrder = function (matrix) {
 };
 ```
 
-#### 27 NC17 最长回文子串 *中心扩散
+### 27 NC17 最长回文子串 *中心扩散
 
 怎么求回文？ 我们的思路就是，从中间开始，向两边同时遍历，当左右元素一样的时候，代表满足回文条件。 一直循环这个过程去判断，直到左右不相等，截取这一段就好了。
 
@@ -1416,7 +1416,7 @@ function getLongestPalindrome(A) {
 }
 ```
 
-#### 28 NC54 三数之和 *双指针 重点是去重
+### 28 NC54 三数之和 *双指针 重点是去重
 
 法一：哈希法 确定了a和b，那就可以想两数之和一样，在map中寻找`-(a+b)`，减少一层循环，时间复杂度`O(n^2)`，空间复杂度`O(n)`
 
@@ -1457,6 +1457,6 @@ console.log(threeSum(
 
 ```
 
-#### 29 NC12 重建二叉树
+### 29 NC12 重建二叉树
 
 ![image-20221114153924953](C:\Users\Jasmine\Desktop\面试\img\image-20221114153924953.png)
