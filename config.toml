@@ -1,12 +1,12 @@
 baseURL = 'http://add1.dev/'
 languageCode = 'zh-CN'
+paginate = 4
 theme = "JuiceBar"
 title = "Jasmine's Blog"
-paginate = 4
 [params]
 author = "Jasmine"
-description = "Jasmine's blog"
 authorImage = "/images/profile.jpg"
+description = "Jasmine's blog"
 
 Title = "Jasmine"
 content = "I'm Jasmine, nice to meet you(ˊ˘ˋ*)♡"
@@ -46,16 +46,16 @@ name = "Privacy"
 url = "/privacy"
 
 [params.giscus]
-repo = "hotjuicew/blog"
-repoID = "R_kgDOHHQOuw"
 category = "Announcements"
 categoryID = "DIC_kwDOHHQOu84CWCQ3"
-mapping = "og:title"
-reactionsEnabled = "1"
 emitMetadata = "0"
 inputPosition = "bottom"
 lang = "en"
 loading = "lazy"
+mapping = "og:title"
+reactionsEnabled = "1"
+repo = "hotjuicew/blog"
+repoID = "R_kgDOHHQOuw"
 
 #用于输出文档的设置
 [outputs]

@@ -3,21 +3,28 @@ title: "Markdown简明语法总结"
 date: 2022-07-18T12:08:30+08:00
 categories: ["工具"]
 ---
+
 ### 1.斜体和加粗
-#### 斜体：使用下划线` _ ` 包裹文本
+
+#### 斜体：使用下划线`_` 包裹文本
+
 `_Writing in Markdown is not that hard!_`
 _Writing in Markdown is not that hard!_
 
 #### 加粗:用两个星号`**`包裹文本
+
 `**I will complete these lessons!**`
 **I will complete these lessons!**
 
 #### 粗体加斜体，效果叠加
+
 `If you're thinking to yourself, **_This is unbelievable_**, you'd probably be right.`
 If you're thinking to yourself, **_This is unbelievable_**, you'd probably be right.
 
 ### 2.标题
+
 在文本的前面添加一个井号 `#`。 你可以键入多个井号来生成你想要的几级标题。 例如，一级标题你需要添加一个井号 (# 一级标题)， 当你需要一个三级标题时你就要三个井号 (### 三级标题).
+
 ```
 #Header one
 ##Header two
@@ -28,25 +35,37 @@ If you're thinking to yourself, **_This is unbelievable_**, you'd probably be ri
 ```
 
 ### 3.超链接
+
 #### 内联链接
-将被链接的文本用方括号 ` [ ]` 包裹起来， 然后将链接地址用圆括号  `( ) `包裹起来。比方说，创建一个写着 "Visit Github!" 到 www.github.com 的超链接， 你应该使用Markdown这样书写： `[Visit GitHub!](www.github.com)`
+
+将被链接的文本用方括号 ` [ ]` 包裹起来， 然后将链接地址用圆括号 `( ) `包裹起来。比方说，创建一个写着 "Visit Github!" 到 www.github.com 的超链接， 你应该使用 Markdown 这样书写： `[Visit GitHub!](www.github.com)`
 
 创建一个写着 "Search for it."，链接到 www.google.com 的超链接
 `[Search for it.](www.google.com)`
 [Search for it.](www.google.com)
+
 #### 全局链接
+
 这个链接链接到文档的另外一个位置。
+
 ### 4.图片
-需要输入一个感叹号  `! `将方括号 `[ ]` 中的描述性文本包裹起来， 然后使用圆括号 `( ) `包裹链接地址。 （描述性文本是为视障者解释图片短语或者句子的语句。）
+
+需要输入一个感叹号 `! `将方括号 `[ ]` 中的描述性文本包裹起来， 然后使用圆括号 `( ) `包裹链接地址。 （描述性文本是为视障者解释图片短语或者句子的语句。）
 例如，创建一个描述文本为"Benjamin Bannekat"的内联的链接地址为 https://octodex.github.com/images/bannekat.png 的图片， 你应该这样写`Markdown： ![Benjamin Bannekat](https://octodex.github.com/images/bannekat.png)`。
+
 ### 5.引用块
+
 要创建一个引用块，您只需要在行首添加大于号（>）。例如：
 `> “无为而治的罪是所有七种罪中最致命的。有传言说，要使邪恶的人实现其目的，只需要好人无所事事。”`
+
 > “无为而治的罪是所有七种罪中最致命的。有传言说，要使邪恶的人实现其目的，只需要好人无所事事。”
 
 ### 6.列表
+
 #### 无序列表
+
 在每一个列表项前加一个星号 `*` 。 每个列表要占一行。
+
 ```
 * 丁丁
  * 一个记者
@@ -58,17 +77,21 @@ If you're thinking to yourself, **_This is unbelievable_**, you'd probably be ri
  * 喜欢威士忌
    * 可能还喜欢苏格兰威士忌？
 ```
-* 丁丁
-   * 一个记者
-   * 有粗糙的棕色头发
-   * 世界上最棒的狗的朋友
-* 哈多克
-   * 船长
-   * 有浓密的胡须
-   * 喜欢威士忌
-   * 可能还喜欢苏格兰威士忌？
+
+- 丁丁
+  - 一个记者
+  - 有粗糙的棕色头发
+  - 世界上最棒的狗的朋友
+- 哈多克
+  - 船长
+  - 有浓密的胡须
+  - 喜欢威士忌
+  - 可能还喜欢苏格兰威士忌？
+
 #### 有序列表
+
 有序列表以数字开头，而不是星号。
+
 ```
 1. 打碎三个鸡蛋并倒入一个碗里。
    现在，您要以一种不把鸡蛋液洒出的方式将鸡蛋弄碎。
@@ -86,6 +109,7 @@ If you're thinking to yourself, **_This is unbelievable_**, you'd probably be ri
    * 用双手
    * 在旁边防止毛巾以便于清理
 ```
+
 1. 打碎三个鸡蛋并倒入一个碗里。
    现在，您要以一种不把鸡蛋液洒出的方式将鸡蛋弄碎。
    如果您将鸡蛋液洒得到处都是，请用毛巾清理干净。
@@ -98,7 +122,6 @@ If you're thinking to yourself, **_This is unbelievable_**, you'd probably be ri
    > 向上、向下、向左、向右。不要忘记在三文鱼身上涂黄油。
 4. 将三文鱼放入陈放牛奶和鸡蛋的碗中。
    这里有一些放三文鱼的技巧：
-   * 确保没有障碍物或小孩在场
-   * 用双手
-   * 在旁边防止毛巾以便于清理
-
+   - 确保没有障碍物或小孩在场
+   - 用双手
+   - 在旁边防止毛巾以便于清理
