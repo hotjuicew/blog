@@ -1,5 +1,5 @@
 ---
-title: "又开始找工作了"
+title: "刷算法题常用的js方法"
 date: 2022-03-31T17:36:11+08:00
 categories: ["面试"]
 ---
@@ -913,9 +913,8 @@ function twoSum(numbers, target) {
   let map = new Map();
   for (let i = 0; i < numbers.length; i++) {
     if (map.has(target - numbers[i]))
-      return [i + 1, map.get(target - numbers[i]) + 1].sort(
-        (a, b) => a - b
-      ); //题目要求下标从1开始，所以+1
+      return [i + 1, map.get(target - numbers[i]) + 1].sort((a, b) => a - b);
+    //题目要求下标从1开始，所以+1
     else map.set(numbers[i], i);
   }
 }
