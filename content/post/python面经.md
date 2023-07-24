@@ -105,7 +105,7 @@ categories: ["面试"]
 
 （2）对于数据清洗，本小组主要用 python 读取完数据后，先去除无用的符号，再用正则表达式，筛选掉空缺信息，得到所需要的信息，放入图数据库中，等待下一步操作。
 
-```py
+```python
 import pandas as pd
 import numpy as np
 import re
@@ -124,7 +124,7 @@ with open("BX-Users.csv",encoding='utf-8-sig',errors="ignore") as f:
 
 （3）Neo4j 是一个高性能的 NoSQL 图形数据库。它将结构化数据存储在网络上而不是表格中。同时，它是一个嵌入式的、基于磁盘的、具备完全的事务特性的 Java 持久化引擎，是一个成熟的、具有推理功能的引擎。利用 Neo4j 来构建图书的知识图谱，能够直观地分析不同用户图书偏好的结构化数据网络。因此小组决定用 Neo4j 进行图数据的存储。我们将图书的类型、作者、出版社等进行了详致的分类，方便后续导入 Neo4j。在对实体与关系进行了定义之后，将表格导入 Neo4j，可对其输入命令，使关系与实体全部呈现。这种实体与关系的可视化表示，可随意进行拖拽处理，还可以对其进行定义实体的属性。例如实体：莫言，可对其定义属性：作者。
 
-```py
+```python
 import csv
 import py2neo
 from py2neo import Graph,Node,Relationship,NodeMatcher
